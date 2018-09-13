@@ -28,13 +28,13 @@ This will output a list of scene cuts in JSON format:
 ```json
 [
   {
-    "frame": 114.0,
+    "frame": 114,
     "pts": 114.0,
     "pts_time": 3.8,
     "score": 0.445904
   },
   {
-    "frame": 159.0,
+    "frame": 159,
     "pts": 159.0,
     "pts_time": 5.3,
     "score": 0.440126

@@ -71,11 +71,11 @@ def get_scenecuts(in_f, threshhold=0.3):
     for line in lines:
         line = line.strip()
         if line.startswith("frame"):
-            rex = r"frame:(?P<frame>\d+)\s+pts:(?P<pts>\d+)\s+pts_time:(?P<pts_time>[\d\.]+)"
+            rex = r"frame:(?P<frame>\d+)\s+pts:(?P<pts>[\d\.]+)\s+pts_time:(?P<pts_time>[\d\.]+)"
             ret = re.match(rex, line)
             if ret:
                 ret_matches = ret.groupdict()
-                last_frame_info["frame"] = float(ret_matches["frame"])
+                last_frame_info["frame"] = int(ret_matches["frame"])
                 last_frame_info["pts"] = float(ret_matches["pts"])
                 last_frame_info["pts_time"] = float(ret_matches["pts_time"])
             else:
