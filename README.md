@@ -1,6 +1,6 @@
 # Scenecut Extractor
 
-Gets scenecut from video files using ffmpeg.
+Extract scenecuts from video files using ffmpeg.
 
 Author: Werner Robitza <werner.robitza@gmail.com>
 
@@ -22,6 +22,27 @@ Or clone this repository, then run the tool with `python -m scenecut_extractor`.
 Run:
 
     scenecut_extractor <input-file>
+
+This will output a list of scene cuts in JSON format:
+
+```json
+[
+  {
+    "frame": 114.0,
+    "pts": 114.0,
+    "pts_time": 3.8,
+    "score": 0.445904
+  },
+  {
+    "frame": 159.0,
+    "pts": 159.0,
+    "pts_time": 5.3,
+    "score": 0.440126
+  }
+]
+```
+
+You can use the `-t` parameter to set the threshhold that ffmpeg internally uses (between 0 and 1).
 
 Or `scenecut_extractor -h` to find more options.
 
