@@ -42,7 +42,7 @@ This will output a list of scene cuts in JSON format:
 ]
 ```
 
-You can use the `-t` parameter to set the threshhold that ffmpeg internally uses (between 0 and 1).
+You can use the `-t` parameter to set the threshold that ffmpeg internally uses (between 0 and 1).
 
 Or `scenecut_extractor -h` to find more options.
 

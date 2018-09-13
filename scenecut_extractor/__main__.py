@@ -36,7 +36,7 @@ def run_command(cmd, dry=False, verbose=False):
         sys.exit(1)
 
 
-def get_scenecuts(in_f, threshhold=0.3):
+def get_scenecuts(in_f, threshold=0.3):
 
     temp_dir = tempfile.gettempdir()
     temp_file_name = os.path.join(
@@ -90,7 +90,7 @@ def get_scenecuts(in_f, threshhold=0.3):
             frames.append(last_frame_info)
             last_frame_info = {}
 
-    scenecuts = [f for f in frames if f["score"] >= threshhold]
+    scenecuts = [f for f in frames if f["score"] >= threshold]
 
     return scenecuts
 
@@ -103,7 +103,7 @@ def main():
     parser.add_argument("input", help="input file")
     parser.add_argument(
         "-t",
-        "--threshhold",
+        "--threshold",
         type=float,
         default=0.3,
         help="threshold (between 0 and 1)",
@@ -127,7 +127,7 @@ def main():
 
     cli_args = parser.parse_args()
 
-    scenecuts = get_scenecuts(cli_args.input, cli_args.threshhold)
+    scenecuts = get_scenecuts(cli_args.input, cli_args.threshold)
 
     if cli_args.output == "all":
         if cli_args.output_format == "csv":
