@@ -36,7 +36,8 @@ echo "Will set new version to be $INPUT_STRING"
 perl -pi -e "s/$BASE_STRING/$INPUT_STRING/g" "$SRC_VERSION_FILE"
 
 echo $INPUT_STRING > VERSION
-echo "Version $INPUT_STRING:\n" > tmpfile
+echo "Version $INPUT_STRING:" > tmpfile
+echo "" >> tmpfile
 git log --pretty=format:"- %s" "v$BASE_STRING"...HEAD >> tmpfile
 echo "" >> tmpfile
 echo "" >> tmpfile
