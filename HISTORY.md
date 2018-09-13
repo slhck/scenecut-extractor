@@ -1,3 +1,7 @@
+Version 0.1.3:
+
+- I wish I could spell
+
 Version 0.1.2:
 
 - fix release script
