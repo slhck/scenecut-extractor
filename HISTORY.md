@@ -1,3 +1,9 @@
+Version 0.1.4:
+
+- wrap code in try clause
+- check threshold range
+- update README
+
 Version 0.1.3:
 
 - I wish I could spell
