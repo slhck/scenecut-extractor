@@ -40,59 +40,65 @@ def get_scenecuts(in_f, threshold=0.3):
     if not (0 <= threshold <= 1):
         raise RuntimeError("Threshold must be between 0 and 1")
 
-    temp_dir = tempfile.gettempdir()
-    temp_file_name = os.path.join(
-        temp_dir, next(tempfile._get_candidate_names()) + ".txt"
-    )
+    try:
+        temp_dir = tempfile.gettempdir()
+        temp_file_name = os.path.join(
+            temp_dir, next(tempfile._get_candidate_names()) + ".txt"
+        )
 
-    cmd = [
-        "ffmpeg",
-        "-loglevel",
-        "error",
-        "-y",
-        "-i",
-        in_f,
-        "-vf",
-        "select=gte(scene\,0),metadata=print:file=" + temp_file_name,
-        "-an",
-        "-f",
-        "null",
-        "-",
-    ]
+        cmd = [
+            "ffmpeg",
+            "-loglevel",
+            "error",
+            "-y",
+            "-i",
+            in_f,
+            "-vf",
+            "select=gte(scene\,0),metadata=print:file=" + temp_file_name,
+            "-an",
+            "-f",
+            "null",
+            "-",
+        ]
 
-    ret = run_command(cmd)
+        ret = run_command(cmd)
 
-    lines = []
-    if os.path.isfile(temp_file_name):
-        with open(temp_file_name, "r") as out_f:
-            lines = out_f.readlines()
-        os.remove(temp_file_name)
+        lines = []
+        if os.path.isfile(temp_file_name):
+            with open(temp_file_name, "r") as out_f:
+                lines = out_f.readlines()
 
-    frames = []
-    last_frame_info = {}
-    for line in lines:
-        line = line.strip()
-        if line.startswith("frame"):
-            rex = r"frame:(?P<frame>\d+)\s+pts:(?P<pts>[\d\.]+)\s+pts_time:(?P<pts_time>[\d\.]+)"
-            ret = re.match(rex, line)
-            if ret:
-                ret_matches = ret.groupdict()
-                last_frame_info["frame"] = int(ret_matches["frame"])
-                last_frame_info["pts"] = float(ret_matches["pts"])
-                last_frame_info["pts_time"] = float(ret_matches["pts_time"])
-            else:
-                raise RuntimeError("Wrongly formatted line: " + line)
-            continue
-        if line.startswith("lavfi.scene_score"):
-            splits = line.split("=")
-            if len(splits):
-                last_frame_info["score"] = float(splits[1])
-            else:
-                raise RuntimeError("Wrongly formatted line: " + line)
-            frames.append(last_frame_info)
-            last_frame_info = {}
+        frames = []
+        last_frame_info = {}
+        for line in lines:
+            line = line.strip()
+            if line.startswith("frame"):
+                rex = r"frame:(?P<frame>\d+)\s+pts:(?P<pts>[\d\.]+)\s+pts_time:(?P<pts_time>[\d\.]+)"
+                ret = re.match(rex, line)
+                if ret:
+                    ret_matches = ret.groupdict()
+                    last_frame_info["frame"] = int(ret_matches["frame"])
+                    last_frame_info["pts"] = float(ret_matches["pts"])
+                    last_frame_info["pts_time"] = float(ret_matches["pts_time"])
+                else:
+                    raise RuntimeError("Wrongly formatted line: " + line)
+                continue
+            if line.startswith("lavfi.scene_score"):
+                splits = line.split("=")
+                if len(splits):
+                    last_frame_info["score"] = float(splits[1])
+                else:
+                    raise RuntimeError("Wrongly formatted line: " + line)
+                frames.append(last_frame_info)
+                last_frame_info = {}
 
-    scenecuts = [f for f in frames if f["score"] >= threshold]
+        scenecuts = [f for f in frames if f["score"] >= threshold]
+
+    except Exception as e:
+        raise e
+    finally:
+        if os.path.isfile(temp_file_name):
+            os.remove(temp_file_name)
 
     return scenecuts
 
