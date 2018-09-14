@@ -37,6 +37,8 @@ def run_command(cmd, dry=False, verbose=False):
 
 
 def get_scenecuts(in_f, threshold=0.3):
+    if not (0 <= threshold <= 1):
+        raise RuntimeError("Threshold must be between 0 and 1")
 
     temp_dir = tempfile.gettempdir()
     temp_file_name = os.path.join(
