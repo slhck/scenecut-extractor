@@ -1,5 +1,7 @@
 # Scenecut Extractor
 
+[![PyPI version](https://badge.fury.io/py/scenecut_extractor.svg)](https://badge.fury.io/py/scenecut_extractor)
+
 Extract scenecuts from video files using ffmpeg.
 
 This tool uses the [`select` filter](http://ffmpeg.org/ffmpeg-filters.html#select_002c-aselect) from ffmpeg to determine the scene cut probability of adjacent frames, and allows users to determine which frames (or at which timestamps) the scene cuts happen.
