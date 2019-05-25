@@ -25,7 +25,7 @@ setup(
     version=version,
     description='Get scenecuts from a video file using ffmpeg',
     long_description=long_description,
-    url='https://github.com/slhck/bufferer',
+    url='https://github.com/slhck/scenecut-extractor',
     author='Werner Robitza',
     author_email='werner.robitza@gmail.com',
     license='MIT',
