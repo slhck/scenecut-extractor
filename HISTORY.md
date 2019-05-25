@@ -1,3 +1,8 @@
+Version 0.1.5:
+
+- fix URL in setup file
+- add pypi badge
+
 Version 0.1.4:
 
 - wrap code in try clause
