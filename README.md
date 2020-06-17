@@ -1,6 +1,6 @@
 # Scenecut Extractor
 
-[![PyPI version](https://badge.fury.io/py/scenecut_extractor.svg)](https://badge.fury.io/py/scenecut_extractor)
+[![PyPI version](https://badge.fury.io/py/scenecut-extractor.svg)](https://badge.fury.io/py/scenecut-extractor)
 
 Extract scenecuts from video files using ffmpeg.
 
