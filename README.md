@@ -10,16 +10,16 @@ Author: Werner Robitza <werner.robitza@gmail.com>
 
 # Requirements
 
-- Python 2.7 or 3.x
+- Python 3.x
 - FFmpeg:
     - download a static build from [their website](http://ffmpeg.org/download.html))
     - put the `ffmpeg` executable in your `$PATH`
 
 # Installation
 
-    pip install scenecut_extractor
+    pip3 install --user scenecut_extractor
 
-Or clone this repository, then run the tool with `python -m scenecut_extractor`.
+Or clone this repository, then run the tool with `python3 -m scenecut_extractor`.
 
 # Usage
 
@@ -27,7 +27,7 @@ Run:
 
     scenecut_extractor <input-file>
 
-This will output a list of scene cuts in JSON format:
+This might take a while depending on the length of your input file, and then output a list of scene cuts in JSON format:
 
 ```json
 [
@@ -57,9 +57,13 @@ The command supports the following arguments and options:
 
 You can use the `-t` parameter to set the threshold that ffmpeg internally uses (between 0 and 1) – if you set it to 0, all frames will be printed with their probabilities.
 
+# Alternatives
+
+For extended scene detection features such as automatic splitting or perceptual hashing, you may want to check out [PySceneDetect](https://pyscenedetect.readthedocs.io/en/latest/).
+
 # License
 
-scenecut_extractor, Copyright (c) 2018 Werner Robitza
+scenecut_extractor, Copyright (c) 2018–2020 Werner Robitza
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
