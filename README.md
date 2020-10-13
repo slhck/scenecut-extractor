@@ -10,7 +10,7 @@ Author: Werner Robitza <werner.robitza@gmail.com>
 
 # Requirements
 
-- Python 3.x
+- Python 3.5 or higher
 - FFmpeg:
     - download a static build from [their website](http://ffmpeg.org/download.html))
     - put the `ffmpeg` executable in your `$PATH`
@@ -53,6 +53,8 @@ The command supports the following arguments and options:
 - `-t`, `--threshold`: set threshold between 0 and 1 (default: 0.3)
 - `-o`, `--output`: one of `{all,frames,seconds}`, output either all info, or only frame number, or timestamp in seconds
 - `-of`, `--output-format`: one of `{json,csv}` (default: json)
+- `-v`, `--verbose`: show the ffmpeg command
+- `-p`, `--progress`: show a progress bar (useful for longer videos)
 - `-h`, `--help`: show help message and exit
 
 You can use the `-t` parameter to set the threshold that ffmpeg internally uses (between 0 and 1) – if you set it to 0, all frames will be printed with their probabilities.
