@@ -12,31 +12,86 @@ import json
 import sys
 import tempfile
 import re
+import shlex
+from tqdm import tqdm
 
 from .__init__ import __version__ as version
 
+DUR_REGEX = re.compile(
+    r"Duration: (?P<hour>\d{2}):(?P<min>\d{2}):(?P<sec>\d{2})\.(?P<ms>\d{2})"
+)
+TIME_REGEX = re.compile(
+    r"out_time=(?P<hour>\d{2}):(?P<min>\d{2}):(?P<sec>\d{2})\.(?P<ms>\d{2})"
+)
 
-def run_command(cmd, dry=False, verbose=False):
-    """
-    Run a command directly
-    """
-    if dry or verbose:
-        print("[cmd] " + " ".join(cmd))
-        if dry:
-            return
 
-    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    stdout, stderr = process.communicate()
-
-    if process.returncode == 0:
-        return stdout.decode("utf-8") + stderr.decode("utf-8")
+# https://gist.github.com/Hellowlol/5f8545e999259b4371c91ac223409209
+def to_ms(s=None, des=None, **kwargs):
+    if s:
+        hour = int(s[0:2])
+        minute = int(s[3:5])
+        sec = int(s[6:8])
+        ms = int(s[10:11])
     else:
-        print("[error] running command: {}".format(" ".join(cmd)))
-        print(stderr.decode("utf-8"))
-        sys.exit(1)
+        hour = int(kwargs.get("hour", 0))
+        minute = int(kwargs.get("min", 0))
+        sec = int(kwargs.get("sec", 0))
+        ms = int(kwargs.get("ms", 0))
+
+    result = (hour * 60 * 60 * 1000) + (minute * 60 * 1000) + (sec * 1000) + ms
+    if des and isinstance(des, int):
+        return round(result, des)
+    return result
 
 
-def get_scenecuts(in_f, threshold=0.3):
+def run_ffmpeg_command(cmd):
+    """
+    Run an ffmpeg command, trying to capture the process output and calculate
+    the duration / progress.
+    Yields the progress in percent.
+    """
+    total_dur = None
+
+    cmd_with_progress = [cmd[0]] + ["-progress", "-", "-nostats"] + cmd[1:]
+
+    stderr = []
+
+    p = subprocess.Popen(
+        cmd_with_progress,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        universal_newlines=False,
+    )
+
+    # for line in iter(p.stderr):
+    while True:
+        line = p.stdout.readline().decode("utf8", errors="replace").strip()
+        if line == "" and p.poll() is not None:
+            break
+        stderr.append(line.strip())
+
+        if not total_dur and DUR_REGEX.search(line):
+            total_dur = DUR_REGEX.search(line).groupdict()
+            total_dur = to_ms(**total_dur)
+            continue
+        if total_dur:
+            result = TIME_REGEX.search(line)
+            if result:
+                elapsed_time = to_ms(**result.groupdict())
+                yield int(elapsed_time / total_dur * 100)
+
+    if p.returncode != 0:
+        raise RuntimeError(
+            "Error running command {}: {}".format(cmd, str("\n".join(stderr)))
+        )
+
+    yield 100
+
+
+def get_scenecuts(in_f, threshold=0.3, progress=False, verbose=False):
+    """
+    Calculate scene cuts with ffmpeg.
+    """
     if not (0 <= threshold <= 1):
         raise RuntimeError("Threshold must be between 0 and 1")
 
@@ -61,7 +116,17 @@ def get_scenecuts(in_f, threshold=0.3):
             "-",
         ]
 
-        ret = run_command(cmd)
+        if verbose:
+            cmd_q = " ".join([shlex.quote(c) for c in cmd])
+            print("Running ffmpeg command: {}".format(cmd_q), file=sys.stderr)
+
+        if progress:
+            with tqdm(total=100, position=1) as pbar:
+                for progress in run_ffmpeg_command(cmd):
+                    pbar.update(progress - pbar.n)
+        else:
+            for _ in run_ffmpeg_command(cmd):
+                pass
 
         lines = []
         if os.path.isfile(temp_file_name):
@@ -132,10 +197,21 @@ def main():
         choices=["json", "csv"],
         help="output in which format",
     )
+    parser.add_argument(
+        "-p", "--progress", action="store_true", help="Show a progress bar on stderr"
+    )
+    parser.add_argument(
+        "-v", "--verbose", action="store_true", help="Print verbose info to stderr"
+    )
 
     cli_args = parser.parse_args()
 
-    scenecuts = get_scenecuts(cli_args.input, cli_args.threshold)
+    scenecuts = get_scenecuts(
+        cli_args.input,
+        cli_args.threshold,
+        progress=cli_args.progress,
+        verbose=cli_args.verbose,
+    )
 
     if cli_args.output == "all":
         if cli_args.output_format == "csv":
@@ -153,6 +229,8 @@ def main():
             data = [str(s["frame"]) for s in scenecuts]
         elif cli_args.output == "seconds":
             data = [str(s["pts_time"]) for s in scenecuts]
+        else:
+            raise RuntimeError(f"No such output format: {cli_args.output}")
         print("\n".join(data))
 
 
