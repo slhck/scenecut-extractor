@@ -6,7 +6,6 @@
 # License: MIT
 
 import argparse
-import subprocess
 import os
 import json
 import sys
@@ -14,79 +13,9 @@ import tempfile
 import re
 import shlex
 from tqdm import tqdm
+from ffmpeg_progress_yield import FfmpegProgress
 
 from .__init__ import __version__ as version
-
-DUR_REGEX = re.compile(
-    r"Duration: (?P<hour>\d{2}):(?P<min>\d{2}):(?P<sec>\d{2})\.(?P<ms>\d{2})"
-)
-TIME_REGEX = re.compile(
-    r"out_time=(?P<hour>\d{2}):(?P<min>\d{2}):(?P<sec>\d{2})\.(?P<ms>\d{2})"
-)
-
-
-# https://gist.github.com/Hellowlol/5f8545e999259b4371c91ac223409209
-def to_ms(s=None, des=None, **kwargs):
-    if s:
-        hour = int(s[0:2])
-        minute = int(s[3:5])
-        sec = int(s[6:8])
-        ms = int(s[10:11])
-    else:
-        hour = int(kwargs.get("hour", 0))
-        minute = int(kwargs.get("min", 0))
-        sec = int(kwargs.get("sec", 0))
-        ms = int(kwargs.get("ms", 0))
-
-    result = (hour * 60 * 60 * 1000) + (minute * 60 * 1000) + (sec * 1000) + ms
-    if des and isinstance(des, int):
-        return round(result, des)
-    return result
-
-
-def run_ffmpeg_command(cmd):
-    """
-    Run an ffmpeg command, trying to capture the process output and calculate
-    the duration / progress.
-    Yields the progress in percent.
-    """
-    total_dur = None
-
-    cmd_with_progress = [cmd[0]] + ["-progress", "-", "-nostats"] + cmd[1:]
-
-    stderr = []
-
-    p = subprocess.Popen(
-        cmd_with_progress,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        universal_newlines=False,
-    )
-
-    # for line in iter(p.stderr):
-    while True:
-        line = p.stdout.readline().decode("utf8", errors="replace").strip()
-        if line == "" and p.poll() is not None:
-            break
-        stderr.append(line.strip())
-
-        if not total_dur and DUR_REGEX.search(line):
-            total_dur = DUR_REGEX.search(line).groupdict()
-            total_dur = to_ms(**total_dur)
-            continue
-        if total_dur:
-            result = TIME_REGEX.search(line)
-            if result:
-                elapsed_time = to_ms(**result.groupdict())
-                yield int(elapsed_time / total_dur * 100)
-
-    if p.returncode != 0:
-        raise RuntimeError(
-            "Error running command {}: {}".format(cmd, str("\n".join(stderr)))
-        )
-
-    yield 100
-
 
 def get_scenecuts(in_f, threshold=0.3, progress=False, verbose=False):
     """
@@ -120,12 +49,13 @@ def get_scenecuts(in_f, threshold=0.3, progress=False, verbose=False):
             cmd_q = " ".join([shlex.quote(c) for c in cmd])
             print("Running ffmpeg command: {}".format(cmd_q), file=sys.stderr)
 
+        ff = FfmpegProgress(cmd)
         if progress:
             with tqdm(total=100, position=1) as pbar:
-                for progress in run_ffmpeg_command(cmd):
+                for progress in ff.run_command_with_progress():
                     pbar.update(progress - pbar.n)
         else:
-            for _ in run_ffmpeg_command(cmd):
+            for _ in ff.run_command_with_progress():
                 pass
 
         lines = []
