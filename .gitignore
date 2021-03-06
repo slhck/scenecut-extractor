@@ -29,3 +29,4 @@ venv/
 ENV/
 
 test/*.mp4
+.vscode
