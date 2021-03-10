@@ -37,7 +37,7 @@ setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
     ],
-    python_requires="~=3.5",
+    python_requires=">=3.5",
     install_requires=["tqdm>=4.38.0", "ffmpeg-progress-yield"],
     packages=["scenecut_extractor"],
     entry_points={
