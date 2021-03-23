@@ -1,6 +1,6 @@
 # Scenecut Extractor
 
-[![PyPI version](https://img.shields.io/pypi/v/scenecut-extractor.svg)](https://img.shields.io/pypi/v/scenecut-extractor)
+[![PyPI version](https://img.shields.io/pypi/v/scenecut-extractor.svg)](https://pypi.org/project/scenecut-extractor)
 
 Extract scenecuts from video files using ffmpeg.
 
