@@ -17,6 +17,7 @@ from ffmpeg_progress_yield import FfmpegProgress
 
 from .__init__ import __version__ as version
 
+
 def get_scenecuts(in_f, threshold=0.3, progress=False, verbose=False):
     """
     Calculate scene cuts with ffmpeg.
@@ -24,11 +25,12 @@ def get_scenecuts(in_f, threshold=0.3, progress=False, verbose=False):
     if not (0 <= threshold <= 1):
         raise RuntimeError("Threshold must be between 0 and 1")
 
+    temp_dir = tempfile.gettempdir()
+    temp_file_name = os.path.join(
+        temp_dir, next(tempfile._get_candidate_names()) + ".txt"
+    )
+
     try:
-        temp_dir = tempfile.gettempdir()
-        temp_file_name = os.path.join(
-            temp_dir, next(tempfile._get_candidate_names()) + ".txt"
-        )
 
         cmd = [
             "ffmpeg",
