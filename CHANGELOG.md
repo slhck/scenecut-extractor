@@ -4,6 +4,9 @@ Changelog
 
 (unreleased)
 ------------
+- Bump version to 0.3.3. [Werner Robitza]
+- Fix error with nonexisting temp file name. [Werner Robitza]
+- Update badge link. [Werner Robitza]
 - Bump version to 0.3.2. [Werner Robitza]
 - Add python_requires to setup.py. [Werner Robitza]
 - Add missing test file. [Werner Robitza]
