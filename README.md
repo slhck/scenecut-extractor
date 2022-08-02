@@ -25,7 +25,7 @@ Or clone this repository, then run the tool with `python3 -m scenecut_extractor`
 
 Run:
 
-    scenecut_extractor <input-file>
+    scenecut-extractor <input-file>
 
 This might take a while depending on the length of your input file, and then output a list of scene cuts in JSON format:
 
@@ -48,14 +48,29 @@ This might take a while depending on the length of your input file, and then out
 
 # Extended Usage
 
-The command supports the following arguments and options:
+The command supports the following arguments and options, see `scenecut-extractor -h`:
 
-- `-t`, `--threshold`: set threshold between 0 and 1 (default: 0.3)
-- `-o`, `--output`: one of `{all,frames,seconds}`, output either all info, or only frame number, or timestamp in seconds
-- `-of`, `--output-format`: one of `{json,csv}` (default: json)
-- `-v`, `--verbose`: show the ffmpeg command
-- `-p`, `--progress`: show a progress bar (useful for longer videos)
-- `-h`, `--help`: show help message and exit
+```
+usage: scenecut-extractor [-h] [-t THRESHOLD] [-o {all,frames,seconds}]
+                          [-of {json,csv}] [-p] [-v]
+                          input
+
+scenecut_extractor v0.3.3
+
+positional arguments:
+  input                 input file
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -t THRESHOLD, --threshold THRESHOLD
+                        threshold (between 0 and 1) (default: 0.3)
+  -o {all,frames,seconds}, --output {all,frames,seconds}
+                        output what (default: all)
+  -of {json,csv}, --output-format {json,csv}
+                        output in which format (default: json)
+  -p, --progress        Show a progress bar on stderr (default: False)
+  -v, --verbose         Print verbose info to stderr (default: False)
+```
 
 You can use the `-t` parameter to set the threshold that ffmpeg internally uses (between 0 and 1) – if you set it to 0, all frames will be printed with their probabilities.
 
