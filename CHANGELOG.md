@@ -4,6 +4,8 @@ Changelog
 
 (unreleased)
 ------------
+- Bump version to 0.4.0. [Werner Robitza]
+- Update python requirements. [Werner Robitza]
 - Bump version to 0.3.4. [Werner Robitza]
 - Update README. [Werner Robitza]
 - Add a second console entry point. [Werner Robitza]
