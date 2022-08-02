@@ -4,6 +4,10 @@ Changelog
 
 (unreleased)
 ------------
+- Bump version to 0.3.4. [Werner Robitza]
+- Update README. [Werner Robitza]
+- Add a second console entry point. [Werner Robitza]
+- Fix license. [Werner Robitza]
 - Bump version to 0.3.3. [Werner Robitza]
 - Fix error with nonexisting temp file name. [Werner Robitza]
 - Update badge link. [Werner Robitza]
