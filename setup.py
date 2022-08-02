@@ -41,6 +41,9 @@ setup(
     install_requires=["tqdm>=4.38.0", "ffmpeg-progress-yield"],
     packages=["scenecut_extractor"],
     entry_points={
-        "console_scripts": ["scenecut_extractor=scenecut_extractor.__main__:main",],
+        "console_scripts": [
+            "scenecut_extractor=scenecut_extractor.__main__:main",
+            "scenecut-extractor=scenecut_extractor.__main__:main",
+        ],
     },
 )
