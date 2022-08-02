@@ -10,14 +10,16 @@ Author: Werner Robitza <werner.robitza@gmail.com>
 
 # Requirements
 
-- Python 3.5 or higher
+- Python 3.7 or higher
 - FFmpeg:
     - download a static build from [their website](http://ffmpeg.org/download.html))
     - put the `ffmpeg` executable in your `$PATH`
 
 # Installation
 
-    pip3 install --user scenecut_extractor
+```bash
+pip3 install --user scenecut_extractor
+```
 
 Or clone this repository, then run the tool with `python3 -m scenecut_extractor`.
 
@@ -25,7 +27,9 @@ Or clone this repository, then run the tool with `python3 -m scenecut_extractor`
 
 Run:
 
-    scenecut-extractor <input-file>
+```bash
+scenecut-extractor <input-file>
+```
 
 This might take a while depending on the length of your input file, and then output a list of scene cuts in JSON format:
 
