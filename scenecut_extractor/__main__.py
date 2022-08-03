@@ -17,8 +17,10 @@ from ffmpeg_progress_yield import FfmpegProgress
 
 from .__init__ import __version__ as version
 
+DEFAULT_THRESHOLD = 0.3
 
-def get_scenecuts(in_f, threshold=0.3, progress=False, verbose=False):
+
+def get_scenecuts(in_f, threshold=DEFAULT_THRESHOLD, progress=False, verbose=False):
     """
     Calculate scene cuts with ffmpeg.
     """
@@ -110,7 +112,7 @@ def main():
         "-t",
         "--threshold",
         type=float,
-        default=0.3,
+        default=DEFAULT_THRESHOLD,
         help="threshold (between 0 and 1)",
     )
     parser.add_argument(
