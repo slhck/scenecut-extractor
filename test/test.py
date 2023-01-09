@@ -1,7 +1,7 @@
 #!/usr/bin/env pytest
 
-import os
 import json
+import os
 import subprocess
 
 TEST_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), "test.mp4"))

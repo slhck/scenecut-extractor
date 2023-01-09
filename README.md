@@ -2,20 +2,34 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/scenecut-extractor.svg)](https://pypi.org/project/scenecut-extractor)
 
+[![Python package](https://github.com/slhck/scenecut-extractor/actions/workflows/python-package.yml/badge.svg)](https://github.com/slhck/scenecut-extractor/actions/workflows/python-package.yml)
+
 Extract scenecuts from video files using ffmpeg.
 
 This tool uses the [`select` filter](http://ffmpeg.org/ffmpeg-filters.html#select_002c-aselect) from ffmpeg to determine the scene cut probability of adjacent frames, and allows users to determine which frames (or at which timestamps) the scene cuts happen.
 
+**Note:** Previous versions installed a `scenecut_extractor` executable. To harmonize it with other tools, now the executable is called `scenecut-extractor`. Please ensure you remove the old executable (e.g. run `which scenecut_extractor` and remove the file).
+
 Author: Werner Robitza <werner.robitza@gmail.com>
 
-# Requirements
+**Contents:**
 
-- Python 3.7 or higher
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Extended Usage](#extended-usage)
+- [API](#api)
+- [Alternatives](#alternatives)
+- [License](#license)
+
+## Requirements
+
+- Python 3.8 or higher
 - FFmpeg:
     - download a static build from [their website](http://ffmpeg.org/download.html))
     - put the `ffmpeg` executable in your `$PATH`
 
-# Installation
+## Installation
 
 ```bash
 pip3 install --user scenecut_extractor
@@ -23,7 +37,7 @@ pip3 install --user scenecut_extractor
 
 Or clone this repository, then run the tool with `python3 -m scenecut_extractor`.
 
-# Usage
+## Usage
 
 Run:
 
@@ -50,26 +64,26 @@ This might take a while depending on the length of your input file, and then out
 ]
 ```
 
-# Extended Usage
+## Extended Usage
 
 The command supports the following arguments and options, see `scenecut-extractor -h`:
 
 ```
 usage: scenecut-extractor [-h] [-t THRESHOLD] [-o {all,frames,seconds}]
-                          [-of {json,csv}] [-p] [-v]
-                          input
+                   [-of {json,csv}] [-p] [-v]
+                   input
 
-scenecut_extractor v0.3.3
+scenecut_extractor v0.4.0
 
 positional arguments:
   input                 input file
 
-optional arguments:
+options:
   -h, --help            show this help message and exit
   -t THRESHOLD, --threshold THRESHOLD
                         threshold (between 0 and 1) (default: 0.3)
   -o {all,frames,seconds}, --output {all,frames,seconds}
-                        output what (default: all)
+                        output which information (default: all)
   -of {json,csv}, --output-format {json,csv}
                         output in which format (default: json)
   -p, --progress        Show a progress bar on stderr (default: False)
@@ -78,13 +92,19 @@ optional arguments:
 
 You can use the `-t` parameter to set the threshold that ffmpeg internally uses (between 0 and 1) – if you set it to 0, all frames will be printed with their probabilities.
 
-# Alternatives
+## API
+
+This program has a simple API that can be used to integrate it into other Python programs.
+
+For more information see the [API documentation](https://htmlpreview.github.io/?https://github.com/slhck/scenecut-extractor/blob/master/docs/scenecut_extractor.html).
+
+## Alternatives
 
 For extended scene detection features such as automatic splitting or perceptual hashing, you may want to check out [PySceneDetect](https://pyscenedetect.readthedocs.io/en/latest/).
 
-# License
+## License
 
-scenecut_extractor, Copyright (c) 2018–2022 Werner Robitza
+scenecut_extractor, Copyright (c) 2018–2023 Werner Robitza
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 

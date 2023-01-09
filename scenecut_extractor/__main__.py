@@ -6,100 +6,28 @@
 # License: MIT
 
 import argparse
-import os
-import json
+import logging
 import sys
-import tempfile
-import re
-import shlex
-from tqdm import tqdm
-from ffmpeg_progress_yield import FfmpegProgress
 
 from .__init__ import __version__ as version
+from ._log import CustomLogFormatter
+from ._scenecut_extractor import ScenecutExtractor
 
-DEFAULT_THRESHOLD = 0.3
+logger = logging.getLogger("scenecut-extractor")
 
 
-def get_scenecuts(in_f, threshold=DEFAULT_THRESHOLD, progress=False, verbose=False):
-    """
-    Calculate scene cuts with ffmpeg.
-    """
-    if not (0 <= threshold <= 1):
-        raise RuntimeError("Threshold must be between 0 and 1")
+def setup_logger(level: int = logging.INFO) -> logging.Logger:
+    logger = logging.getLogger("scenecut-extractor")
+    logger.setLevel(level)
 
-    temp_dir = tempfile.gettempdir()
-    temp_file_name = os.path.join(
-        temp_dir, next(tempfile._get_candidate_names()) + ".txt"
-    )
+    ch = logging.StreamHandler(sys.stderr)
+    ch.setLevel(level)
 
-    try:
+    ch.setFormatter(CustomLogFormatter())
 
-        cmd = [
-            "ffmpeg",
-            "-loglevel",
-            "error",
-            "-y",
-            "-i",
-            in_f,
-            "-vf",
-            "select=gte(scene\,0),metadata=print:file=" + temp_file_name,
-            "-an",
-            "-f",
-            "null",
-            "-",
-        ]
+    logger.addHandler(ch)
 
-        if verbose:
-            cmd_q = " ".join([shlex.quote(c) for c in cmd])
-            print("Running ffmpeg command: {}".format(cmd_q), file=sys.stderr)
-
-        ff = FfmpegProgress(cmd)
-        if progress:
-            with tqdm(total=100, position=1) as pbar:
-                for progress in ff.run_command_with_progress():
-                    pbar.update(progress - pbar.n)
-        else:
-            for _ in ff.run_command_with_progress():
-                pass
-
-        lines = []
-        if os.path.isfile(temp_file_name):
-            with open(temp_file_name, "r") as out_f:
-                lines = out_f.readlines()
-
-        frames = []
-        last_frame_info = {}
-        for line in lines:
-            line = line.strip()
-            if line.startswith("frame"):
-                rex = r"frame:(?P<frame>\d+)\s+pts:(?P<pts>[\d\.]+)\s+pts_time:(?P<pts_time>[\d\.]+)"
-                ret = re.match(rex, line)
-                if ret:
-                    ret_matches = ret.groupdict()
-                    last_frame_info["frame"] = int(ret_matches["frame"])
-                    last_frame_info["pts"] = float(ret_matches["pts"])
-                    last_frame_info["pts_time"] = float(ret_matches["pts_time"])
-                else:
-                    raise RuntimeError("Wrongly formatted line: " + line)
-                continue
-            if line.startswith("lavfi.scene_score"):
-                splits = line.split("=")
-                if len(splits):
-                    last_frame_info["score"] = float(splits[1])
-                else:
-                    raise RuntimeError("Wrongly formatted line: " + line)
-                frames.append(last_frame_info)
-                last_frame_info = {}
-
-        scenecuts = [f for f in frames if f["score"] >= threshold]
-
-    except Exception as e:
-        raise e
-    finally:
-        if os.path.isfile(temp_file_name):
-            os.remove(temp_file_name)
-
-    return scenecuts
+    return logger
 
 
 def main():
@@ -112,7 +40,7 @@ def main():
         "-t",
         "--threshold",
         type=float,
-        default=DEFAULT_THRESHOLD,
+        default=ScenecutExtractor.DEFAULT_THRESHOLD,
         help="threshold (between 0 and 1)",
     )
     parser.add_argument(
@@ -121,7 +49,7 @@ def main():
         type=str,
         default="all",
         choices=["all", "frames", "seconds"],
-        help="output what",
+        help="output which information",
     )
     parser.add_argument(
         "-of",
@@ -140,23 +68,21 @@ def main():
 
     cli_args = parser.parse_args()
 
-    scenecuts = get_scenecuts(
-        cli_args.input,
+    setup_logger(logging.DEBUG if cli_args.verbose else logging.INFO)
+
+    se = ScenecutExtractor(cli_args.input)
+    se.calculate_scenecuts(
         cli_args.threshold,
         progress=cli_args.progress,
-        verbose=cli_args.verbose,
     )
+
+    scenecuts = se.get_scenecuts()
 
     if cli_args.output == "all":
         if cli_args.output_format == "csv":
-            print(",".join(scenecuts[0].keys()))
-            print(
-                "\n".join(
-                    [",".join([str(r) for r in row.values()]) for row in scenecuts]
-                )
-            )
+            print(se.get_as_csv())
         else:
-            print(json.dumps(scenecuts, indent=2))
+            print(se.get_as_json())
 
     else:
         if cli_args.output == "frames":
