@@ -1,57 +1,132 @@
-Changelog
-=========
+# Changelog
 
 
-(unreleased)
-------------
-- Bump version to 0.4.0. [Werner Robitza]
-- Update python requirements. [Werner Robitza]
-- Bump version to 0.3.4. [Werner Robitza]
-- Update README. [Werner Robitza]
-- Add a second console entry point. [Werner Robitza]
-- Fix license. [Werner Robitza]
-- Bump version to 0.3.3. [Werner Robitza]
-- Fix error with nonexisting temp file name. [Werner Robitza]
-- Update badge link. [Werner Robitza]
-- Bump version to 0.3.2. [Werner Robitza]
-- Add python_requires to setup.py. [Werner Robitza]
-- Add missing test file. [Werner Robitza]
-- Remove release script. [Werner Robitza]
-- Bump version to 0.3.1. [Werner Robitza]
-- Format setup.py and switch to markdown. [Werner Robitza]
-- Switch progress to external lib. [Werner Robitza]
-- Add vscode to gitignore. [Werner Robitza]
-- Update badge URL. [Werner Robitza]
-- Bump version to 0.3.0. [Werner Robitza]
-- Update README. [Werner Robitza]
-- Bump version to 0.2.0. [Werner Robitza]
-- Add unit tests. [Werner Robitza]
-- Add progress bar. [Werner Robitza]
-- Update README.md. [Werner Robitza]
+## v0.5.0 (2023-01-09)
+
+* Various improvements.
+
+  add API, proper logging, types, github workflows
+
+* Use common default variable.
+
+
+## v0.4.0 (2022-08-02)
+
+* Update python requirements.
+
+
+## v0.3.4 (2022-08-02)
+
+* Update README.
+
+* Add a second console entry point.
+
+* Fix license.
+
+
+## v0.3.3 (2021-12-09)
+
+* Fix error with nonexisting temp file name.
+
+* Update badge link.
+
+
+## v0.3.2 (2021-03-10)
+
+* Add python_requires to setup.py.
+
+* Add missing test file.
+
+* Remove release script.
+
+
+## v0.3.1 (2021-03-06)
+
+* Format setup.py and switch to markdown.
+
+* Switch progress to external lib.
+
+* Add vscode to gitignore.
+
+* Update badge URL.
+
+
+## v0.3.0 (2020-10-13)
+
+* Update README.
+
+
+## v0.2.0 (2020-10-13)
+
+* Add unit tests.
+
+* Add progress bar.
+
+* Update README.md.
 
   fix pypi badge link
-- Update README.md. [Werner Robitza]
+
+* Update README.md.
 
   soft-deprecate Python 2.x, add link to PySceneDetect
-- Bump version to 0.1.6. [Werner Robitza]
-- Add release script. [Werner Robitza]
-- Python 3.7 and 3.8. [Werner Robitza]
-- Rename changelog. [Werner Robitza]
-- Version bump to 0.1.5. [Werner Robitza]
-- Fix URL in setup file. [Werner Robitza]
-- Add pypi badge. [Werner Robitza]
-- Version bump to 0.1.4. [Werner Robitza]
-- Wrap code in try clause. [Werner Robitza]
-- Check threshold range. [Werner Robitza]
-- Update README. [Werner Robitza]
-- Version bump to 0.1.3. [Werner Robitza]
-- I wish I could spell. [Werner Robitza]
-- Version bump to 0.1.2. [Werner Robitza]
-- Fix release script. [Werner Robitza]
-- Version bump to 0.1.1. [Werner Robitza]
-- Fix release exec bit. [Werner Robitza]
-- Fix storage of frame as int. [Werner Robitza]
-- Improve readme. [Werner Robitza]
-- Initial commit. [Werner Robitza]
+
+
+## v0.1.6 (2020-03-15)
+
+* Add release script.
+
+* Python 3.7 and 3.8.
+
+* Rename changelog.
+
+
+## v0.1.5 (2019-05-25)
+
+* Version bump to 0.1.5.
+
+* Fix URL in setup file.
+
+* Add pypi badge.
+
+
+## v0.1.4 (2018-09-14)
+
+* Version bump to 0.1.4.
+
+* Wrap code in try clause.
+
+* Check threshold range.
+
+* Update README.
+
+
+## v0.1.3 (2018-09-13)
+
+* Version bump to 0.1.3.
+
+* I wish I could spell.
+
+
+## v0.1.2 (2018-09-13)
+
+* Version bump to 0.1.2.
+
+* Fix release script.
+
+
+## v0.1.1 (2018-09-13)
+
+* Version bump to 0.1.1.
+
+* Fix release exec bit.
+
+* Fix storage of frame as int.
+
+* Improve readme.
+
+
+## v0.1 (2018-09-13)
+
+* Initial commit.
 
 
