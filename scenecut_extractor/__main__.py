@@ -7,6 +7,7 @@
 
 import argparse
 import logging
+import os
 import sys
 
 from .__init__ import __version__ as version
@@ -60,6 +61,19 @@ def main():
         help="output in which format",
     )
     parser.add_argument(
+        "-x", "--extract", action="store_true", help="extract the scene cuts"
+    )
+    parser.add_argument(
+        "-d",
+        "--output-directory",
+        help="Set the output directory. Default is the current working directory.",
+    )
+    parser.add_argument(
+        "--no-copy",
+        action="store_true",
+        help="Don't stream-copy, but re-encode the video.",
+    )
+    parser.add_argument(
         "-p", "--progress", action="store_true", help="Show a progress bar on stderr"
     )
     parser.add_argument(
@@ -70,6 +84,7 @@ def main():
 
     setup_logger(logging.DEBUG if cli_args.verbose else logging.INFO)
 
+    logger.info("Calculating scene cuts ...")
     se = ScenecutExtractor(cli_args.input)
     se.calculate_scenecuts(
         cli_args.threshold,
@@ -92,6 +107,16 @@ def main():
         else:
             raise RuntimeError(f"No such output format: {cli_args.output}")
         print("\n".join(data))
+
+    if cli_args.extract:
+        logger.info("Extracting scenes ...")
+        se.extract_scenes(
+            output_directory=cli_args.output_directory
+            if cli_args.output_directory
+            else os.getcwd(),
+            no_copy=cli_args.no_copy,
+            progress=cli_args.progress,
+        )
 
 
 if __name__ == "__main__":

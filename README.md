@@ -64,16 +64,27 @@ This might take a while depending on the length of your input file, and then out
 ]
 ```
 
+To extract the scene cuts, use the `-x` flag and optionally specify an output directory with `-d`:
+
+```bash
+scenecut-extractor <input-file> -x -d output-directory
+```
+
+This will create a directory called `output-directory` and put the extracted scenes in there. The filenames will be the same as the input file, but with the scene times appended to them.
+
+**Note:** Cutting may not be frame-accurate. To be precise, you have to re-encode the video. Use the `--no-copy` flag to do this. The output will use libx264 encoding with CRF 23 to achieve a good balance between quality and file size. Future versions of this tool will allow you to specify your own encoding options.
+
 ## Extended Usage
 
 The command supports the following arguments and options, see `scenecut-extractor -h`:
 
 ```
 usage: scenecut-extractor [-h] [-t THRESHOLD] [-o {all,frames,seconds}]
-                   [-of {json,csv}] [-p] [-v]
+                   [-of {json,csv}] [-x] [-d OUTPUT_DIRECTORY] [--no-copy]
+                   [-p] [-v]
                    input
 
-scenecut_extractor v0.4.0
+scenecut_extractor v0.5.0
 
 positional arguments:
   input                 input file
@@ -86,6 +97,12 @@ options:
                         output which information (default: all)
   -of {json,csv}, --output-format {json,csv}
                         output in which format (default: json)
+  -x, --extract         extract the scene cuts (default: False)
+  -d OUTPUT_DIRECTORY, --output-directory OUTPUT_DIRECTORY
+                        Set the output directory. Default is the current
+                        working directory. (default: None)
+  --no-copy             Don't stream-copy, but re-encode the video. (default:
+                        False)
   -p, --progress        Show a progress bar on stderr (default: False)
   -v, --verbose         Print verbose info to stderr (default: False)
 ```
