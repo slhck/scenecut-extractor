@@ -1,6 +1,15 @@
 # Changelog
 
 
+## v0.6.0 (2023-01-30)
+
+* Add extraction of scenes.
+
+* Fix mypy settings.
+
+* Remove stalebot.
+
+
 ## v0.5.0 (2023-01-09)
 
 * Various improvements.
