@@ -117,6 +117,7 @@ def main():
             no_copy=cli_args.no_copy,
             progress=cli_args.progress,
         )
+        logger.info(f"Scenes extracted to {cli_args.output_directory}")
 
 
 if __name__ == "__main__":
