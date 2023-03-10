@@ -6,12 +6,30 @@ import os
 import re
 import shlex
 import tempfile
+from platform import system
 from typing import Literal, TypedDict, Union, cast
 
 from ffmpeg_progress_yield import FfmpegProgress
 from tqdm import tqdm
 
+IS_WIN = system() in ["Windows", "cli"]
+
 logger = logging.getLogger("scenecut-extractor")
+
+
+def win_path_check(path: str) -> str:
+    """
+    Format a file path correctly for Windows
+
+    Args:
+        path (str): The path to format
+
+    Returns:
+        str: The formatted path
+    """
+    if IS_WIN:
+        return path.replace("\\", "/").replace(":", "\\:")
+    return path
 
 
 class ScenecutInfo(TypedDict):
@@ -112,7 +130,8 @@ class ScenecutExtractor:
                 "-i",
                 self.input_file,
                 "-vf",
-                "select=gte(scene\,0),metadata=print:file=" + temp_file_name,
+                "select=gte(scene\,0),metadata=print:file="
+                + win_path_check(temp_file_name),
                 "-an",
                 "-f",
                 "null",
