@@ -1,6 +1,13 @@
 # Changelog
 
 
+## v0.6.1 (2023-03-10)
+
+* Attempt to fix windows paths, should fix #2.
+
+* Log output directory.
+
+
 ## v0.6.0 (2023-01-30)
 
 * Add extraction of scenes.
