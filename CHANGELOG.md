@@ -1,6 +1,13 @@
 # Changelog
 
 
+## v0.6.2 (2023-03-23)
+
+* Do not print error if no scenecuts in file.
+
+* Fix windows paths, fixes #2.
+
+
 ## v0.6.1 (2023-03-10)
 
 * Attempt to fix windows paths, should fix #2.
