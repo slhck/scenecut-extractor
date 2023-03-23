@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+import posixpath
 import re
 import shlex
 import tempfile
@@ -28,7 +29,8 @@ def win_path_check(path: str) -> str:
         str: The formatted path
     """
     if IS_WIN:
-        return path.replace("\\", "/").replace(":", "\\:")
+        # inside filters, we need to escape the colon twice
+        return path.replace("\\", "/").replace(":", "\\\\:")
     return path
 
 
@@ -114,7 +116,7 @@ class ScenecutExtractor:
             raise RuntimeError("Threshold must be between 0 and 1")
 
         temp_dir = tempfile.mkdtemp()
-        temp_file_name = os.path.join(
+        temp_file_name = posixpath.join(
             temp_dir, "scenecut-extractor-" + os.path.basename(self.input_file) + ".txt"
         )
 
