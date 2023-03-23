@@ -8,7 +8,7 @@ import re
 import shlex
 import tempfile
 from platform import system
-from typing import Literal, TypedDict, Union, cast
+from typing import Literal, Optional, TypedDict, Union, cast
 
 from ffmpeg_progress_yield import FfmpegProgress
 from tqdm import tqdm
@@ -55,7 +55,7 @@ class ScenecutExtractor:
         Args:
             input_file (str): the input file
         """
-        self.scenecuts: list[ScenecutInfo] = []
+        self.scenecuts: Optional[list[ScenecutInfo]] = None
         self.input_file = input_file
 
     def get_as_csv(self) -> str:
@@ -68,7 +68,7 @@ class ScenecutExtractor:
         Raises:
             RuntimeError: if no scene cuts have been calculated yet
         """
-        if len(self.scenecuts) == 0:
+        if self.scenecuts is None:
             raise RuntimeError("No scene cuts calculated yet")
 
         ret = ",".join(self.scenecuts[0].keys()) + "\n"
@@ -88,7 +88,7 @@ class ScenecutExtractor:
         Raises:
             RuntimeError: if no scene cuts have been calculated yet
         """
-        if len(self.scenecuts) == 0:
+        if self.scenecuts is None:
             raise RuntimeError("No scene cuts calculated yet")
 
         return json.dumps(self.scenecuts, indent=2)
@@ -99,7 +99,13 @@ class ScenecutExtractor:
 
         Returns:
             list[ScenecutInfo]: the scene cuts
+
+        Raises:
+            RuntimeError: if no scene cuts have been calculated yet
         """
+        if self.scenecuts is None:
+            raise RuntimeError("No scene cuts calculated yet")
+
         return self.scenecuts
 
     def calculate_scenecuts(
@@ -206,7 +212,7 @@ class ScenecutExtractor:
             no_copy (bool, optional): Do not copy the streams, reencode them. Defaults to False.
             progress (bool, optional): Show progress bar. Defaults to False.
         """
-        if len(self.scenecuts) == 0:
+        if self.scenecuts is None:
             raise RuntimeError("No scene cuts calculated yet")
 
         # insert one at the beginning
