@@ -7,6 +7,7 @@ import posixpath
 import re
 import shlex
 import tempfile
+from pathlib import Path
 from platform import system
 from typing import Literal, Optional, TypedDict, Union, cast
 
@@ -48,7 +49,7 @@ class ScenecutInfo(TypedDict):
 class ScenecutExtractor:
     DEFAULT_THRESHOLD: float = 0.3
 
-    def __init__(self, input_file: str) -> None:
+    def __init__(self, input_file: Union[str, Path]) -> None:
         """
         Create a new ScenecutExtractor instance.
 
@@ -56,7 +57,7 @@ class ScenecutExtractor:
             input_file (str): the input file
         """
         self.scenecuts: Optional[list[ScenecutInfo]] = None
-        self.input_file = input_file
+        self.input_file: Path = Path(input_file) if isinstance(input_file, str) else input_file
 
     def get_as_csv(self) -> str:
         """
@@ -123,7 +124,7 @@ class ScenecutExtractor:
 
         temp_dir = tempfile.mkdtemp()
         temp_file_name = posixpath.join(
-            temp_dir, "scenecut-extractor-" + os.path.basename(self.input_file) + ".txt"
+            temp_dir, "scenecut-extractor-" + self.input_file.stem + ".txt"
         )
 
         logger.debug("Writing to temp file: " + temp_file_name)
@@ -234,7 +235,7 @@ class ScenecutExtractor:
 
     @staticmethod
     def cut_part_from_file(
-        input_file: str,
+        input_file: Path,
         output_directory: str,
         start: Union[float, None] = None,
         end: Union[float, None, Literal[""]] = None,
@@ -269,8 +270,7 @@ class ScenecutExtractor:
             codec_args = ["-c", "copy"]
 
         suffix = f"{start:.3f}-{end:.3f}.mkv"
-        prefix = os.path.splitext(os.path.basename(input_file))[0]
-        output_file = os.path.join(output_directory, f"{prefix}_{suffix}")
+        output_file = os.path.join(output_directory, f"{input_file.stem}_{suffix}")
 
         cmd = [
             "ffmpeg",
