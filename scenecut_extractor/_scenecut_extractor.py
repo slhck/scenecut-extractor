@@ -148,7 +148,7 @@ class ScenecutExtractor:
             ]
 
             logger.debug(
-                "Running ffmpeg command: " + " ".join([shlex.quote(c) for c in cmd])
+                "Running ffmpeg command: " + " ".join([shlex.quote(c if isinstance(c, str) else str(c)) for c in cmd])
             )
 
             ff = FfmpegProgress(cmd)
