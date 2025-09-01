@@ -1,6 +1,21 @@
 # Changelog
 
 
+## v0.6.3 (2025-09-01)
+
+* Bump version to 0.6.3.
+
+* Migrate to uv and modern package structure.
+
+* Set python_requires to >=3.9.
+
+* Changed license specifier.
+
+* Removed wheel settings from setup.cfg.
+
+* Add chaptertool to README.
+
+
 ## v0.6.2 (2023-03-23)
 
 * Do not print error if no scenecuts in file.
