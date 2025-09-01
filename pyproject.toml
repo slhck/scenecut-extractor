@@ -1,0 +1,52 @@
+[build-system]
+requires = ["uv_build>=0.8.14,<0.9.0"]
+build-backend = "uv_build"
+
+[project]
+name = "scenecut_extractor"
+version = "0.6.2"
+description = "Get scenecuts from a video file using ffmpeg"
+readme = "README.md"
+authors = [
+    { name = "Werner Robitza", email = "werner.robitza@gmail.com" }
+]
+license = "MIT"
+license-files = ["LICENSE.md"]
+requires-python = ">=3.9"
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Topic :: Multimedia :: Video",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+dependencies = [
+    "tqdm>=4.38.0",
+    "ffmpeg-progress-yield",
+]
+
+[project.urls]
+Homepage = "https://github.com/slhck/scenecut-extractor"
+Repository = "https://github.com/slhck/scenecut-extractor"
+
+[project.scripts]
+scenecut-extractor = "scenecut_extractor.__main__:main"
+
+[dependency-groups]
+dev = [
+    "pytest >=8.1.1,<9",
+    "ruff>=0.12.11",
+    "mypy",
+    "pdoc>=15.0.4",
+]
+
+[tool.mypy]
+python_version = "3.13"
+ignore_missing_imports = true
+exclude = ["build"]
+namespace_packages = false

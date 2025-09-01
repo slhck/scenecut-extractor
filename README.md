@@ -19,23 +19,35 @@ Author: Werner Robitza <werner.robitza@gmail.com>
 - [Usage](#usage)
 - [Extended Usage](#extended-usage)
 - [API](#api)
-- [Alternatives](#alternatives)
+- [Alternatives and Related Tools](#alternatives-and-related-tools)
 - [License](#license)
 
 ## Requirements
 
 - Python 3.8 or higher
 - FFmpeg:
-    - download a static build from [their website](http://ffmpeg.org/download.html))
-    - put the `ffmpeg` executable in your `$PATH`
+  - download a static build from [their website](http://ffmpeg.org/download.html))
+  - put the `ffmpeg` executable in your `$PATH`
 
 ## Installation
 
+Using [uv](https://docs.astral.sh/uv/getting-started/installation/):
+
 ```bash
-pip3 install --user scenecut_extractor
+uvx scenecut-extractor
 ```
 
-Or clone this repository, then run the tool with `python3 -m scenecut_extractor`.
+Using [pipx](https://pipx.pypa.io/latest/installation/):
+
+```bash
+pipx install scenecut-extractor
+```
+
+Or, using pip:
+
+```bash
+pip3 install --user scenecut-extractor
+```
 
 ## Usage
 

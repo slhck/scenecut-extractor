@@ -1,2 +1,0 @@
-tqdm>=4.38.0
-ffmpeg-progress-yield
