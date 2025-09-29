@@ -18,19 +18,31 @@ IS_WIN = system() in ["Windows", "cli"]
 logger = logging.getLogger("scenecut-extractor")
 
 
-def win_path_check(path: str) -> str:
+def escape_path_for_ffmpeg_filters(path: str) -> str:
     """
-    Format a file path correctly for Windows
+    Format a file path correctly for ffmpeg filters
 
     Args:
         path (str): The path to format
 
     Returns:
-        str: The formatted path
+        str: The formatted path with proper escaping for ffmpeg filters
     """
     if IS_WIN:
         # inside filters, we need to escape the colon twice
-        return path.replace("\\", "/").replace(":", "\\\\:")
+        path = path.replace("\\", "/").replace(":", "\\\\:")
+
+    # escape characters that have special meaning in ffmpeg filters
+    # these characters need to be escaped: [ ] , ; = :
+    path = path.replace("\\", "\\\\")
+    path = path.replace("[", "\\[")
+    path = path.replace("]", "\\]")
+    path = path.replace(",", "\\,")
+    path = path.replace(";", "\\;")
+    path = path.replace("=", "\\=")
+    if not IS_WIN:  # don't double-escape colons on Windows
+        path = path.replace(":", "\\:")
+
     return path
 
 
@@ -141,8 +153,8 @@ class ScenecutExtractor:
                 "-i",
                 self.input_file,
                 "-vf",
-                "select=gte(scene\,0),metadata=print:file="
-                + win_path_check(temp_file_name),
+                r"select=gte(scene\,0),metadata=print:file="
+                + escape_path_for_ffmpeg_filters(temp_file_name),
                 "-an",
                 "-f",
                 "null",
