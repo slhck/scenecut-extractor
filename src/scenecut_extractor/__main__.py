@@ -84,40 +84,45 @@ def main():
 
     setup_logger(logging.DEBUG if cli_args.verbose else logging.INFO)
 
-    logger.info("Calculating scene cuts ...")
-    se = ScenecutExtractor(cli_args.input)
-    se.calculate_scenecuts(
-        cli_args.threshold,
-        progress=cli_args.progress,
-    )
-
-    scenecuts = se.get_scenecuts()
-
-    if cli_args.output == "all":
-        if cli_args.output_format == "csv":
-            print(se.get_as_csv())
-        else:
-            print(se.get_as_json())
-
-    else:
-        if cli_args.output == "frames":
-            data = [str(s["frame"]) for s in scenecuts]
-        elif cli_args.output == "seconds":
-            data = [str(s["pts_time"]) for s in scenecuts]
-        else:
-            raise RuntimeError(f"No such output format: {cli_args.output}")
-        print("\n".join(data))
-
-    if cli_args.extract:
-        logger.info("Extracting scenes ...")
-        se.extract_scenes(
-            output_directory=cli_args.output_directory
-            if cli_args.output_directory
-            else os.getcwd(),
-            no_copy=cli_args.no_copy,
+    try:
+        logger.info("Calculating scene cuts ...")
+        se = ScenecutExtractor(cli_args.input)
+        se.calculate_scenecuts(
+            cli_args.threshold,
             progress=cli_args.progress,
         )
-        logger.info(f"Scenes extracted to {cli_args.output_directory}")
+
+        scenecuts = se.get_scenecuts()
+
+        if cli_args.output == "all":
+            if cli_args.output_format == "csv":
+                print(se.get_as_csv())
+            else:
+                print(se.get_as_json())
+
+        else:
+            if cli_args.output == "frames":
+                data = [str(s["frame"]) for s in scenecuts]
+            elif cli_args.output == "seconds":
+                data = [str(s["pts_time"]) for s in scenecuts]
+            else:
+                raise RuntimeError(f"No such output format: {cli_args.output}")
+            print("\n".join(data))
+
+        if cli_args.extract:
+            logger.info("Extracting scenes ...")
+            se.extract_scenes(
+                output_directory=cli_args.output_directory
+                if cli_args.output_directory
+                else os.getcwd(),
+                no_copy=cli_args.no_copy,
+                progress=cli_args.progress,
+            )
+            logger.info(f"Scenes extracted to {cli_args.output_directory}")
+
+    except KeyboardInterrupt:
+        logger.info("Interrupted by user")
+        sys.exit(0)
 
 
 if __name__ == "__main__":
