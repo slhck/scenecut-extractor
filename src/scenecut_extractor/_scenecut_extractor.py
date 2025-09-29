@@ -71,6 +71,9 @@ class ScenecutExtractor:
         if self.scenecuts is None:
             raise RuntimeError("No scene cuts calculated yet")
 
+        if not self.scenecuts:
+            return ""
+
         ret = ",".join(self.scenecuts[0].keys()) + "\n"
         ret += "\n".join(
             [",".join([str(r) for r in row.values()]) for row in self.scenecuts]
