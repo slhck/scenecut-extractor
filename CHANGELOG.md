@@ -1,6 +1,17 @@
 # Changelog
 
 
+## v0.6.4 (2025-09-29)
+
+* Bump version to 0.6.4.
+
+* Fix: add a keyboard interrupt handler, fixes #6.
+
+* Fix: handle path escapes for brackets and special chars in filename.
+
+* Fix: handle empty scenecuts, fixes #5.
+
+
 ## v0.6.3 (2025-09-01)
 
 * Bump version to 0.6.3.
