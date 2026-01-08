@@ -79,6 +79,11 @@ def main():
     parser.add_argument(
         "-v", "--verbose", action="store_true", help="Print verbose info to stderr"
     )
+    parser.add_argument(
+        "-O",
+        "--output-file",
+        help="Write output to a file instead of stdout",
+    )
 
     cli_args = parser.parse_args()
 
@@ -96,10 +101,9 @@ def main():
 
         if cli_args.output == "all":
             if cli_args.output_format == "csv":
-                print(se.get_as_csv())
+                output_str = se.get_as_csv()
             else:
-                print(se.get_as_json())
-
+                output_str = se.get_as_json()
         else:
             if cli_args.output == "frames":
                 data = [str(s["frame"]) for s in scenecuts]
@@ -107,7 +111,16 @@ def main():
                 data = [str(s["pts_time"]) for s in scenecuts]
             else:
                 raise RuntimeError(f"No such output format: {cli_args.output}")
-            print("\n".join(data))
+            output_str = "\n".join(data)
+
+        if cli_args.output_file:
+            with open(cli_args.output_file, "w") as f:
+                f.write(output_str)
+                if not output_str.endswith("\n"):
+                    f.write("\n")
+            logger.info(f"Output written to {cli_args.output_file}")
+        else:
+            print(output_str)
 
         if cli_args.extract:
             logger.info("Extracting scenes ...")

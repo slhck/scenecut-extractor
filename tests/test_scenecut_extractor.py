@@ -89,3 +89,71 @@ class TestOutput:
                 )
         finally:
             shutil.rmtree("tmp")
+
+    def test_output_file_json(self):
+        """
+        Test JSON output to file
+        """
+        output_file = "tmp_output.json"
+        try:
+            run_command(
+                [
+                    "python3",
+                    "-m",
+                    "scenecut_extractor",
+                    TEST_FILE,
+                    "-O",
+                    output_file,
+                ]
+            )
+
+            assert os.path.exists(output_file)
+
+            with open(output_file, "r") as f:
+                output = json.load(f)
+
+            expected_output = [
+                {"frame": 24, "pts": 12288.0, "pts_time": 0.96, "score": 1.0},
+                {"frame": 49, "pts": 25088.0, "pts_time": 1.96, "score": 1.0},
+                {"frame": 74, "pts": 37888.0, "pts_time": 2.96, "score": 1.0},
+                {"frame": 99, "pts": 50688.0, "pts_time": 3.96, "score": 1.0},
+                {"frame": 124, "pts": 63488.0, "pts_time": 4.96, "score": 1.0},
+                {"frame": 149, "pts": 76288.0, "pts_time": 5.96, "score": 1.0},
+                {"frame": 174, "pts": 89088.0, "pts_time": 6.96, "score": 1.0},
+            ]
+
+            assert output == expected_output
+        finally:
+            if os.path.exists(output_file):
+                os.remove(output_file)
+
+    def test_output_file_csv(self):
+        """
+        Test CSV output to file
+        """
+        output_file = "tmp_output.csv"
+        try:
+            run_command(
+                [
+                    "python3",
+                    "-m",
+                    "scenecut_extractor",
+                    TEST_FILE,
+                    "-of",
+                    "csv",
+                    "-O",
+                    output_file,
+                ]
+            )
+
+            assert os.path.exists(output_file)
+
+            with open(output_file, "r") as f:
+                content = f.read().strip()
+
+            expected_output = "frame,pts,pts_time,score\n24,12288.0,0.96,1.0\n49,25088.0,1.96,1.0\n74,37888.0,2.96,1.0\n99,50688.0,3.96,1.0\n124,63488.0,4.96,1.0\n149,76288.0,5.96,1.0\n174,89088.0,6.96,1.0"
+
+            assert content == expected_output
+        finally:
+            if os.path.exists(output_file):
+                os.remove(output_file)
