@@ -60,15 +60,17 @@ class ScenecutInfo(TypedDict):
 class ScenecutExtractor:
     DEFAULT_THRESHOLD: float = 0.3
 
-    def __init__(self, input_file: str) -> None:
+    def __init__(self, input_file: str, ffmpeg_path: str = "ffmpeg") -> None:
         """
         Create a new ScenecutExtractor instance.
 
         Args:
             input_file (str): the input file
+            ffmpeg_path (str, optional): Path to ffmpeg executable. Defaults to "ffmpeg".
         """
         self.scenecuts: Optional[list[ScenecutInfo]] = None
         self.input_file = input_file
+        self.ffmpeg_path = ffmpeg_path
 
     def get_as_csv(self) -> str:
         """
@@ -145,7 +147,7 @@ class ScenecutExtractor:
 
         try:
             cmd = [
-                "ffmpeg",
+                self.ffmpeg_path,
                 "-nostdin",
                 "-loglevel",
                 "error",
@@ -245,6 +247,7 @@ class ScenecutExtractor:
                 next_scene["pts_time"],
                 no_copy,
                 progress,
+                self.ffmpeg_path,
             )
 
     @staticmethod
@@ -255,6 +258,7 @@ class ScenecutExtractor:
         end: Union[float, None, Literal[""]] = None,
         no_copy: bool = False,
         progress: bool = False,
+        ffmpeg_path: str = "ffmpeg",
     ):
         """
         Cut a part of a video.
@@ -266,6 +270,7 @@ class ScenecutExtractor:
             end (Union[float, None, Literal[""]], optional): End time. Defaults to None.
             no_copy (bool, optional): Do not copy the streams, reencode them. Defaults to False.
             progress (bool, optional): Show progress bar. Defaults to False.
+            ffmpeg_path (str, optional): Path to ffmpeg executable. Defaults to "ffmpeg".
 
         FIXME: This has been copy-pasted from ffmpeg-black-split.
         """
@@ -288,7 +293,7 @@ class ScenecutExtractor:
         output_file = os.path.join(output_directory, f"{prefix}_{suffix}")
 
         cmd = [
-            "ffmpeg",
+            ffmpeg_path,
             "-hide_banner",
             "-y",
             "-ss",

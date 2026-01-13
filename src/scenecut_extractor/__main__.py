@@ -84,6 +84,12 @@ def main():
         "--output-file",
         help="Write output to a file instead of stdout",
     )
+    parser.add_argument(
+        "--ffmpeg-path",
+        type=str,
+        default="ffmpeg",
+        help="Path to ffmpeg executable",
+    )
 
     cli_args = parser.parse_args()
 
@@ -91,7 +97,7 @@ def main():
 
     try:
         logger.info("Calculating scene cuts ...")
-        se = ScenecutExtractor(cli_args.input)
+        se = ScenecutExtractor(cli_args.input, ffmpeg_path=cli_args.ffmpeg_path)
         se.calculate_scenecuts(
             cli_args.threshold,
             progress=cli_args.progress,

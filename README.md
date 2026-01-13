@@ -93,7 +93,7 @@ The command supports the following arguments and options, see `scenecut-extracto
 ```
 usage: scenecut-extractor [-h] [-t THRESHOLD] [-o {all,frames,seconds}]
                    [-of {json,csv}] [-x] [-d OUTPUT_DIRECTORY] [--no-copy]
-                   [-p] [-v] [-O OUTPUT_FILE]
+                   [-p] [-v] [-O OUTPUT_FILE] [--ffmpeg-path FFMPEG_PATH]
                    input
 
 scenecut_extractor v0.5.0
@@ -120,6 +120,8 @@ options:
   -O OUTPUT_FILE, --output-file OUTPUT_FILE
                         Write output to a file instead of stdout (default:
                         None)
+  --ffmpeg-path FFMPEG_PATH
+                        Path to ffmpeg executable (default: ffmpeg)
 ```
 
 You can use the `-t` parameter to set the threshold that ffmpeg internally uses (between 0 and 1) – if you set it to 0, all frames will be printed with their probabilities.
