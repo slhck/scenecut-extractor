@@ -1,3 +1,12 @@
+## [0.8.0] - 2026-01-13
+
+### 🚀 Features
+
+- Add --ffmpeg-path option
+
+### ⚙️ Miscellaneous Tasks
+
+- Bump version to 0.8.0
 ## [0.7.0] - 2026-01-08
 
 ### 🚀 Features

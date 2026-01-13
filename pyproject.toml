@@ -4,7 +4,7 @@ build-backend = "uv_build"
 
 [project]
 name = "scenecut_extractor"
-version = "0.7.0"
+version = "0.8.0"
 description = "Get scenecuts from a video file using ffmpeg"
 readme = "README.md"
 authors = [
