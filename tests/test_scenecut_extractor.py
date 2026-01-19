@@ -60,7 +60,8 @@ class TestOutput:
 
     def test_splitting(self):
         """
-        Test if we can split the input file
+        Test if we can split the input file.
+        By default, the output extension should match the input file.
         """
         try:
             stdout, _ = run_command(
@@ -74,6 +75,40 @@ class TestOutput:
                     "-x",
                     "-d",
                     "tmp",
+                ]
+            )
+
+            scenecuts = json.loads(stdout)
+            scenecuts.insert(0, {"frame": 0, "pts": 0.0, "pts_time": 0.0, "score": 1.0})
+
+            for scenecut, next_scenecut in zip(scenecuts[:-1], scenecuts[1:]):
+                assert os.path.exists(
+                    os.path.join(
+                        "tmp",
+                        f"test_{scenecut['pts_time']:.3f}-{next_scenecut['pts_time']:.3f}.mp4",
+                    )
+                )
+        finally:
+            shutil.rmtree("tmp")
+
+    def test_splitting_with_output_extension(self):
+        """
+        Test if we can split the input file with a custom output extension.
+        """
+        try:
+            stdout, _ = run_command(
+                [
+                    "python3",
+                    "-m",
+                    "scenecut_extractor",
+                    TEST_FILE,
+                    "-of",
+                    "json",
+                    "-x",
+                    "-d",
+                    "tmp",
+                    "-e",
+                    ".mkv",
                 ]
             )
 

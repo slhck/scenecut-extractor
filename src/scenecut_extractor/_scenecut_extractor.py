@@ -220,6 +220,7 @@ class ScenecutExtractor:
         output_directory: str,
         no_copy: bool = False,
         progress: bool = False,
+        output_extension: Optional[str] = None,
     ):
         """
         Extract all scenes to individual files.
@@ -228,6 +229,7 @@ class ScenecutExtractor:
             output_directory (str): Output directory.
             no_copy (bool, optional): Do not copy the streams, reencode them. Defaults to False.
             progress (bool, optional): Show progress bar. Defaults to False.
+            output_extension (str, optional): Output file extension (e.g., ".mp4"). Defaults to input file extension.
         """
         if self.scenecuts is None:
             raise RuntimeError("No scene cuts calculated yet")
@@ -248,6 +250,7 @@ class ScenecutExtractor:
                 no_copy,
                 progress,
                 self.ffmpeg_path,
+                output_extension,
             )
 
     @staticmethod
@@ -259,6 +262,7 @@ class ScenecutExtractor:
         no_copy: bool = False,
         progress: bool = False,
         ffmpeg_path: str = "ffmpeg",
+        output_extension: Optional[str] = None,
     ):
         """
         Cut a part of a video.
@@ -271,6 +275,7 @@ class ScenecutExtractor:
             no_copy (bool, optional): Do not copy the streams, reencode them. Defaults to False.
             progress (bool, optional): Show progress bar. Defaults to False.
             ffmpeg_path (str, optional): Path to ffmpeg executable. Defaults to "ffmpeg".
+            output_extension (str, optional): Output file extension (e.g., ".mp4"). Defaults to input file extension.
 
         FIXME: This has been copy-pasted from ffmpeg-black-split.
         """
@@ -288,8 +293,14 @@ class ScenecutExtractor:
         else:
             codec_args = ["-c", "copy"]
 
-        suffix = f"{start:.3f}-{end:.3f}.mkv"
+        # Use provided extension or default to input file's extension
+        if output_extension is None:
+            output_extension = os.path.splitext(input_file)[1]
+        elif not output_extension.startswith("."):
+            output_extension = "." + output_extension
+
         prefix = os.path.splitext(os.path.basename(input_file))[0]
+        suffix = f"{start:.3f}-{end:.3f}{output_extension}"
         output_file = os.path.join(output_directory, f"{prefix}_{suffix}")
 
         cmd = [

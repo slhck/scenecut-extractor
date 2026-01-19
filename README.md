@@ -93,8 +93,8 @@ The command supports the following arguments and options, see `scenecut-extracto
 ```
 usage: scenecut-extractor [-h] [-t THRESHOLD] [-o {all,frames,seconds}]
                    [-of {json,csv}] [-x] [-d OUTPUT_DIRECTORY] [--no-copy]
-                   [-p] [-v] [-O OUTPUT_FILE] [--ffmpeg-path FFMPEG_PATH]
-                   input
+                   [-e OUTPUT_EXTENSION] [-p] [-v] [-O OUTPUT_FILE]
+                   [--ffmpeg-path FFMPEG_PATH] input
 
 scenecut_extractor v0.5.0
 
@@ -115,6 +115,9 @@ options:
                         working directory. (default: None)
   --no-copy             Don't stream-copy, but re-encode the video. (default:
                         False)
+  -e OUTPUT_EXTENSION, --output-extension OUTPUT_EXTENSION
+                        Override the output file extension for extracted
+                        scenes (e.g., '.mkv'). Default: same as input.
   -p, --progress        Show a progress bar on stderr (default: False)
   -v, --verbose         Print verbose info to stderr (default: False)
   -O OUTPUT_FILE, --output-file OUTPUT_FILE

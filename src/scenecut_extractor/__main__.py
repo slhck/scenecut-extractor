@@ -74,6 +74,12 @@ def main():
         help="Don't stream-copy, but re-encode the video.",
     )
     parser.add_argument(
+        "-e",
+        "--output-extension",
+        type=str,
+        help="Override the output file extension for extracted scenes (e.g., '.mkv'). Default: same as input.",
+    )
+    parser.add_argument(
         "-p", "--progress", action="store_true", help="Show a progress bar on stderr"
     )
     parser.add_argument(
@@ -136,6 +142,7 @@ def main():
                 else os.getcwd(),
                 no_copy=cli_args.no_copy,
                 progress=cli_args.progress,
+                output_extension=cli_args.output_extension,
             )
             logger.info(f"Scenes extracted to {cli_args.output_directory}")
 
