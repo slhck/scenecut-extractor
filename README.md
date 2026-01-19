@@ -1,4 +1,7 @@
 # Scenecut Extractor
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 [![PyPI version](https://img.shields.io/pypi/v/scenecut-extractor.svg)](https://pypi.org/project/scenecut-extractor)
 
@@ -20,6 +23,7 @@ Author: Werner Robitza <werner.robitza@gmail.com>
 - [Extended Usage](#extended-usage)
 - [API](#api)
 - [Alternatives and Related Tools](#alternatives-and-related-tools)
+- [Contributors](#contributors-)
 - [License](#license)
 
 ## Requirements
@@ -140,6 +144,24 @@ For more information see the [API documentation](https://htmlpreview.github.io/?
 For extended scene detection features such as automatic splitting or perceptual hashing, you may want to check out [PySceneDetect](https://pyscenedetect.readthedocs.io/en/latest/).
 
 If you are interested in generating chapters automatically from various media files, have a look at [chaptertool](https://github.com/Mtillmann/chaptertool) (which also uses this library).
+
+## Contributors
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/xqrdot"><img src="https://avatars.githubusercontent.com/u/51158453?v=4?s=100" width="100px;" alt="xqrdot"/><br /><sub><b>xqrdot</b></sub></a><br /><a href="#ideas-xqrdot" title="Ideas, Planning, & Feedback">🤔</a></td>
+    </tr>
+  </tbody>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
 
 ## License
 
