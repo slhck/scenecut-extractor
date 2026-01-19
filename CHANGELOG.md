@@ -1,3 +1,12 @@
+## [0.9.0] - 2026-01-19
+
+### 🚀 Features
+
+- Choose input extension by default, add --output-extension
+
+### ⚙️ Miscellaneous Tasks
+
+- Bump version to 0.9.0
 ## [0.8.0] - 2026-01-13
 
 ### 🚀 Features
