@@ -90,6 +90,14 @@ def main():
         default="ffmpeg",
         help="Path to ffmpeg executable",
     )
+    parser.add_argument(
+        "-fe",
+        "--filename-extension",
+        type=str,
+        default=".mkv",
+        help="Output file extension for extracted scenes",
+    )
+
 
     cli_args = parser.parse_args()
 
@@ -136,6 +144,7 @@ def main():
                 else os.getcwd(),
                 no_copy=cli_args.no_copy,
                 progress=cli_args.progress,
+                filename_extension=cli_args.filename_extension
             )
             logger.info(f"Scenes extracted to {cli_args.output_directory}")
 

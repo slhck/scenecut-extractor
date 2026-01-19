@@ -220,6 +220,7 @@ class ScenecutExtractor:
         output_directory: str,
         no_copy: bool = False,
         progress: bool = False,
+        filename_extension: str = ".mkv",
     ):
         """
         Extract all scenes to individual files.
@@ -228,6 +229,7 @@ class ScenecutExtractor:
             output_directory (str): Output directory.
             no_copy (bool, optional): Do not copy the streams, reencode them. Defaults to False.
             progress (bool, optional): Show progress bar. Defaults to False.
+            filename_extension (str, optional): Output file extension. Defaults to '.mkv'.
         """
         if self.scenecuts is None:
             raise RuntimeError("No scene cuts calculated yet")
@@ -248,6 +250,7 @@ class ScenecutExtractor:
                 no_copy,
                 progress,
                 self.ffmpeg_path,
+                filename_extension
             )
 
     @staticmethod
@@ -259,6 +262,7 @@ class ScenecutExtractor:
         no_copy: bool = False,
         progress: bool = False,
         ffmpeg_path: str = "ffmpeg",
+        filename_extension: str = ".mkv",
     ):
         """
         Cut a part of a video.
@@ -271,11 +275,17 @@ class ScenecutExtractor:
             no_copy (bool, optional): Do not copy the streams, reencode them. Defaults to False.
             progress (bool, optional): Show progress bar. Defaults to False.
             ffmpeg_path (str, optional): Path to ffmpeg executable. Defaults to "ffmpeg".
+            filename_extension (str, optional): Output file extension. Defaults to '.mkv'.
 
         FIXME: This has been copy-pasted from ffmpeg-black-split.
         """
         if start is None:
             start = 0
+
+        normalized_extension = filename_extension.strip() if filename_extension else ".mkv"
+        if not normalized_extension.startswith("."):
+            normalized_extension = f".{normalized_extension}"
+        filename_extension = normalized_extension
 
         if end is not None and end != "":
             to_args = ["-t", str(end - start)]
@@ -288,7 +298,7 @@ class ScenecutExtractor:
         else:
             codec_args = ["-c", "copy"]
 
-        suffix = f"{start:.3f}-{end:.3f}.mkv"
+        suffix = f"{start:.3f}-{end:.3f}{normalized_extension}"
         prefix = os.path.splitext(os.path.basename(input_file))[0]
         output_file = os.path.join(output_directory, f"{prefix}_{suffix}")
 

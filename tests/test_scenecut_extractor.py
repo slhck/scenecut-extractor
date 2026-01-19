@@ -90,6 +90,40 @@ class TestOutput:
         finally:
             shutil.rmtree("tmp")
 
+    def test_different_filename_extension(self):
+        """
+        Test if split input file has a given filename extension
+        """
+        try:
+            stdout, _ = run_command(
+                [
+                    "python3",
+                    "-m",
+                    "scenecut_extractor",
+                    TEST_FILE,
+                    "-of",
+                    "json",
+                    "-x",
+                    "--filename-extension",
+                    ".mp4",
+                    "-d",
+                    "tmp",
+                ]
+            )
+
+            scenecuts = json.loads(stdout)
+            scenecuts.insert(0, {"frame": 0, "pts": 0.0, "pts_time": 0.0, "score": 1.0})
+
+            for scenecut, next_scenecut in zip(scenecuts[:-1], scenecuts[1:]):
+                assert os.path.exists(
+                    os.path.join(
+                        "tmp",
+                        f"test_{scenecut['pts_time']:.3f}-{next_scenecut['pts_time']:.3f}.mp4",
+                    )
+                )
+        finally:
+            shutil.rmtree("tmp")
+
     def test_output_file_json(self):
         """
         Test JSON output to file
