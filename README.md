@@ -141,7 +141,7 @@ For more information see the [API documentation](https://htmlpreview.github.io/?
 
 ## Alternatives and Related Tools
 
-For extended scene detection features such as automatic splitting or perceptual hashing, you may want to check out [PySceneDetect](https://pyscenedetect.readthedocs.io/en/latest/).
+For extended scene detection features such as automatic splitting or perceptual hashing, you may want to check out [PySceneDetect](https://www.scenedetect.com/).
 
 If you are interested in generating chapters automatically from various media files, have a look at [chaptertool](https://github.com/Mtillmann/chaptertool) (which also uses this library).
 
