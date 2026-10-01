@@ -1,4 +1,9 @@
-# Scenecut Extractor
+<h1 align="center">Scenecut Extractor</h1>
+
+<p align="center">
+  <img src="icon.png" alt="Scenecut Extractor logo" width="160" height="160">
+</p>
+
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
 [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
