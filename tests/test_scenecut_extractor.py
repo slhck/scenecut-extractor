@@ -10,6 +10,8 @@ import pytest
 from scenecut_extractor import ScenecutExtractor
 
 TEST_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), "test.mp4"))
+TEST_FILE_DURATION = 7.96
+TEST_FILE_FRAMES = 199
 
 
 def run_command(cmd):
@@ -27,6 +29,28 @@ def run_command(cmd):
                 " ".join(cmd), stderr.decode("utf-8")
             )
         )
+
+
+def count_frames(path):
+    """
+    Count the video frames in a file with ffprobe
+    """
+    stdout, _ = run_command(
+        [
+            "ffprobe",
+            "-v",
+            "error",
+            "-count_frames",
+            "-select_streams",
+            "v:0",
+            "-show_entries",
+            "stream=nb_read_frames",
+            "-of",
+            "csv=p=0",
+            path,
+        ]
+    )
+    return int(stdout.strip())
 
 
 class TestOutput:
@@ -84,6 +108,7 @@ class TestOutput:
 
             scenecuts = json.loads(stdout)
             scenecuts.insert(0, {"frame": 0, "pts": 0.0, "pts_time": 0.0, "score": 1.0})
+            scenecuts.append({"pts_time": TEST_FILE_DURATION})
 
             for scenecut, next_scenecut in zip(scenecuts[:-1], scenecuts[1:]):
                 assert os.path.exists(
@@ -118,6 +143,7 @@ class TestOutput:
 
             scenecuts = json.loads(stdout)
             scenecuts.insert(0, {"frame": 0, "pts": 0.0, "pts_time": 0.0, "score": 1.0})
+            scenecuts.append({"pts_time": TEST_FILE_DURATION})
 
             for scenecut, next_scenecut in zip(scenecuts[:-1], scenecuts[1:]):
                 assert os.path.exists(
@@ -271,6 +297,63 @@ class TestOutput:
 
 
 class TestApi:
+    def test_duration(self):
+        """
+        Test that the duration is calculated from the frame timestamps.
+        """
+        se = ScenecutExtractor(TEST_FILE)
+        se.calculate_scenecuts()
+        assert se.duration == TEST_FILE_DURATION
+
+    def test_extract_scenes_includes_first_and_last_scene(self, tmp_path):
+        """
+        Test that N scene cuts give N+1 files, from the start to the end of the video.
+        """
+        se = ScenecutExtractor(TEST_FILE)
+        se.calculate_scenecuts()
+        scenecuts = se.get_scenecuts()
+        se.extract_scenes(str(tmp_path), no_copy=True, preset="ultrafast")
+
+        output_files = sorted(tmp_path.iterdir())
+        assert len(output_files) == len(scenecuts) + 1
+        assert output_files[0].name == "test_0.000-0.960.mp4"
+        assert output_files[-1].name == "test_6.960-7.960.mp4"
+
+        # first scene: frames 0-23; last scene: frames 174-198
+        assert count_frames(str(output_files[0])) == scenecuts[0]["frame"]
+        assert (
+            count_frames(str(output_files[-1]))
+            == TEST_FILE_FRAMES - scenecuts[-1]["frame"]
+        )
+        assert sum(count_frames(str(f)) for f in output_files) == TEST_FILE_FRAMES
+
+    def test_extract_scenes_without_scenecuts(self, tmp_path):
+        """
+        Test that a video without scene cuts gives one file with the whole video.
+        """
+        se = ScenecutExtractor(TEST_FILE)
+        se.calculate_scenecuts()
+        se.scenecuts = []
+        se.extract_scenes(str(tmp_path), no_copy=True, preset="ultrafast")
+
+        output_files = list(tmp_path.iterdir())
+        assert [f.name for f in output_files] == ["test_0.000-7.960.mp4"]
+        assert count_frames(str(output_files[0])) == TEST_FILE_FRAMES
+
+    def test_extract_scenes_with_scenecut_at_start(self, tmp_path):
+        """
+        Test that a scene cut at the start of the video does not give an empty scene.
+        """
+        se = ScenecutExtractor(TEST_FILE)
+        se.calculate_scenecuts(threshold=0)
+        se.scenecuts = [s for s in se.get_scenecuts() if s["pts_time"] in (0, 0.96)]
+        se.extract_scenes(str(tmp_path), no_copy=True, preset="ultrafast")
+
+        assert sorted(f.name for f in tmp_path.iterdir()) == [
+            "test_0.000-0.960.mp4",
+            "test_0.960-7.960.mp4",
+        ]
+
     def test_invalid_crf_api(self, tmp_path):
         """
         Test that the API rejects CRF values outside 0-51.
@@ -301,7 +384,7 @@ class TestApi:
         se.extract_scenes(str(tmp_path), no_copy=True, crf=30, preset="ultrafast")
 
         output_files = list(tmp_path.iterdir())
-        assert len(output_files) == len(se.get_scenecuts())
+        assert len(output_files) == len(se.get_scenecuts()) + 1
         for output_file in output_files:
             assert b"crf=30.0" in output_file.read_bytes()
 

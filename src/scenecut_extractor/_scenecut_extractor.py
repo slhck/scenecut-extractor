@@ -86,6 +86,8 @@ class ScenecutExtractor:
             ffmpeg_path (str, optional): Path to ffmpeg executable. Defaults to "ffmpeg".
         """
         self.scenecuts: Optional[list[ScenecutInfo]] = None
+        self.duration: Optional[float] = None
+        """Duration of the video stream in seconds, set by calculate_scenecuts()"""
         self.input_file = input_file
         self.ffmpeg_path = ffmpeg_path
 
@@ -224,6 +226,7 @@ class ScenecutExtractor:
                     last_frame_info = {}
 
             self.scenecuts = [f for f in frames if f["score"] >= threshold]
+            self.duration = ScenecutExtractor._get_duration_from_frames(frames)
 
         except Exception as e:
             raise e
@@ -257,19 +260,29 @@ class ScenecutExtractor:
 
         ScenecutExtractor._validate_encoder_options(crf, preset)
 
-        # insert one at the beginning
-        scenecuts = self.scenecuts[:]
-        scenecuts.insert(0, {"pts_time": 0, "pts": 0, "frame": 0, "score": 0})
+        # Scene start times: the start of the video plus every cut after it
+        start_times: list[float] = [0.0]
+        for scenecut in self.scenecuts:
+            if scenecut["pts_time"] > start_times[-1]:
+                start_times.append(scenecut["pts_time"])
+
+        # The last scene ends at the end of the video (None if the duration is unknown)
+        last_end = (
+            self.duration
+            if self.duration is not None and self.duration > start_times[-1]
+            else None
+        )
+        end_times: list[Optional[float]] = [*start_times[1:], last_end]
 
         if not os.path.exists(output_directory):
             os.makedirs(output_directory, exist_ok=True)
 
-        for scene, next_scene in zip(scenecuts, scenecuts[1:]):
+        for start, end in zip(start_times, end_times):
             self.cut_part_from_file(
                 self.input_file,
                 output_directory,
-                scene["pts_time"],
-                next_scene["pts_time"],
+                start,
+                end,
                 no_copy,
                 progress,
                 self.ffmpeg_path,
@@ -277,6 +290,24 @@ class ScenecutExtractor:
                 crf,
                 preset,
             )
+
+    @staticmethod
+    def _get_duration_from_frames(frames: list[ScenecutInfo]) -> Optional[float]:
+        """
+        Get the video duration in seconds from the frame timestamps.
+
+        The duration is the timestamp of the last frame plus the interval
+        between the last two frames.
+
+        Returns:
+            Optional[float]: the duration, or None if there are no frames
+        """
+        if not frames:
+            return None
+        last_pts_time = frames[-1]["pts_time"]
+        if len(frames) < 2:
+            return last_pts_time
+        return round(last_pts_time + (last_pts_time - frames[-2]["pts_time"]), 6)
 
     @staticmethod
     def _validate_encoder_options(crf: int, preset: str) -> None:
@@ -355,7 +386,8 @@ class ScenecutExtractor:
             output_extension = "." + output_extension
 
         prefix = os.path.splitext(os.path.basename(input_file))[0]
-        suffix = f"{start:.3f}-{end:.3f}{output_extension}"
+        end_str = f"{end:.3f}" if end != "" else "end"
+        suffix = f"{start:.3f}-{end_str}{output_extension}"
         output_file = os.path.join(output_directory, f"{prefix}_{suffix}")
 
         cmd = [
