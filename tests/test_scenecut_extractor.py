@@ -5,6 +5,10 @@ import os
 import shutil
 import subprocess
 
+import pytest
+
+from scenecut_extractor import ScenecutExtractor
+
 TEST_FILE = os.path.abspath(os.path.join(os.path.dirname(__file__), "test.mp4"))
 
 
@@ -192,3 +196,122 @@ class TestOutput:
         finally:
             if os.path.exists(output_file):
                 os.remove(output_file)
+
+    def test_splitting_with_crf_and_preset(self):
+        """
+        Test if re-encoding uses the given CRF value and preset.
+        """
+        try:
+            _, stderr = run_command(
+                [
+                    "python3",
+                    "-m",
+                    "scenecut_extractor",
+                    TEST_FILE,
+                    "-x",
+                    "-d",
+                    "tmp",
+                    "--no-copy",
+                    "--crf",
+                    "35",
+                    "--preset",
+                    "ultrafast",
+                    "-v",
+                ]
+            )
+
+            assert "-c:v libx264 -crf 35 -preset ultrafast" in stderr
+            assert os.path.exists(os.path.join("tmp", "test_0.000-0.960.mp4"))
+        finally:
+            shutil.rmtree("tmp")
+
+    def test_splitting_without_reencoding_ignores_crf(self):
+        """
+        Test that stream-copying does not pass CRF or preset to ffmpeg.
+        """
+        try:
+            _, stderr = run_command(
+                [
+                    "python3",
+                    "-m",
+                    "scenecut_extractor",
+                    TEST_FILE,
+                    "-x",
+                    "-d",
+                    "tmp",
+                    "--crf",
+                    "35",
+                    "-v",
+                ]
+            )
+
+            assert "-c copy" in stderr
+            assert "-crf" not in stderr
+        finally:
+            shutil.rmtree("tmp")
+
+    @pytest.mark.parametrize("crf", ["-1", "52", "abc"])
+    def test_invalid_crf_cli(self, crf):
+        """
+        Test that the CLI rejects CRF values outside 0-51.
+        """
+        with pytest.raises(RuntimeError, match="CRF"):
+            run_command(
+                [
+                    "python3",
+                    "-m",
+                    "scenecut_extractor",
+                    TEST_FILE,
+                    "-x",
+                    "--no-copy",
+                    "--crf",
+                    crf,
+                ]
+            )
+
+
+class TestApi:
+    def test_invalid_crf_api(self, tmp_path):
+        """
+        Test that the API rejects CRF values outside 0-51.
+        """
+        se = ScenecutExtractor(TEST_FILE)
+        se.calculate_scenecuts()
+        for crf in [-1, 52]:
+            with pytest.raises(RuntimeError, match="CRF must be between 0 and 51"):
+                se.extract_scenes(str(tmp_path), no_copy=True, crf=crf)
+        assert not any(tmp_path.iterdir())
+
+    def test_invalid_preset_api(self, tmp_path):
+        """
+        Test that the API rejects unknown presets.
+        """
+        se = ScenecutExtractor(TEST_FILE)
+        se.calculate_scenecuts()
+        with pytest.raises(RuntimeError, match="Invalid preset"):
+            se.extract_scenes(str(tmp_path), no_copy=True, preset="fastest")
+
+    def test_extract_scenes_with_crf_api(self, tmp_path):
+        """
+        Test that the output files are encoded with the given CRF value.
+        libx264 writes its settings (e.g. "crf=30.0") into the bitstream.
+        """
+        se = ScenecutExtractor(TEST_FILE)
+        se.calculate_scenecuts()
+        se.extract_scenes(str(tmp_path), no_copy=True, crf=30, preset="ultrafast")
+
+        output_files = list(tmp_path.iterdir())
+        assert len(output_files) == len(se.get_scenecuts())
+        for output_file in output_files:
+            assert b"crf=30.0" in output_file.read_bytes()
+
+    def test_extract_scenes_default_crf_api(self, tmp_path):
+        """
+        Test that the default CRF value is 23.
+        """
+        se = ScenecutExtractor(TEST_FILE)
+        se.calculate_scenecuts()
+        se.extract_scenes(str(tmp_path), no_copy=True)
+
+        for output_file in tmp_path.iterdir():
+            assert b"crf=23.0" in output_file.read_bytes()

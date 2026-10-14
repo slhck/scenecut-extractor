@@ -93,7 +93,11 @@ scenecut-extractor <input-file> -x -d output-directory
 
 This will create a directory called `output-directory` and put the extracted scenes in there. The filenames will be the same as the input file, but with the scene times appended to them.
 
-**Note:** Cutting may not be frame-accurate. To be precise, you have to re-encode the video. Use the `--no-copy` flag to do this. The output will use libx264 encoding with CRF 23 to achieve a good balance between quality and file size. Future versions of this tool will allow you to specify your own encoding options.
+**Note:** Cutting may not be frame-accurate. To be precise, you have to re-encode the video. Use the `--no-copy` flag to do this. The output will use libx264 encoding with CRF 23 and the `medium` preset by default, which gives a good balance between quality and file size. Use `--crf` (0–51, lower means higher quality) and `--preset` to change this, for example:
+
+```bash
+scenecut-extractor <input-file> -x --no-copy --crf 18 --preset slow
+```
 
 ## Extended Usage
 
@@ -101,35 +105,44 @@ The command supports the following arguments and options, see `scenecut-extracto
 
 ```
 usage: scenecut-extractor [-h] [-t THRESHOLD] [-o {all,frames,seconds}]
-                   [-of {json,csv}] [-x] [-d OUTPUT_DIRECTORY] [--no-copy]
-                   [-e OUTPUT_EXTENSION] [-p] [-v] [-O OUTPUT_FILE]
-                   [--ffmpeg-path FFMPEG_PATH] input
+                          [-of {json,csv}] [-x] [-d OUTPUT_DIRECTORY]
+                          [--no-copy] [--crf CRF]
+                          [--preset {ultrafast,superfast,veryfast,faster,fast,medium,slow,slower,veryslow,placebo}]
+                          [-e OUTPUT_EXTENSION] [-p] [-v] [-O OUTPUT_FILE]
+                          [--ffmpeg-path FFMPEG_PATH]
+                          input
 
-scenecut_extractor v0.5.0
+scenecut_extractor v0.9.2
 
 positional arguments:
   input                 input file
 
 options:
   -h, --help            show this help message and exit
-  -t THRESHOLD, --threshold THRESHOLD
+  -t, --threshold THRESHOLD
                         threshold (between 0 and 1) (default: 0.3)
-  -o {all,frames,seconds}, --output {all,frames,seconds}
+  -o, --output {all,frames,seconds}
                         output which information (default: all)
-  -of {json,csv}, --output-format {json,csv}
+  -of, --output-format {json,csv}
                         output in which format (default: json)
   -x, --extract         extract the scene cuts (default: False)
-  -d OUTPUT_DIRECTORY, --output-directory OUTPUT_DIRECTORY
+  -d, --output-directory OUTPUT_DIRECTORY
                         Set the output directory. Default is the current
                         working directory. (default: None)
   --no-copy             Don't stream-copy, but re-encode the video. (default:
                         False)
-  -e OUTPUT_EXTENSION, --output-extension OUTPUT_EXTENSION
+  --crf CRF             CRF value (0-51) for libx264. Only used when re-
+                        encoding (--no-copy). (default: 23)
+  --preset {ultrafast,superfast,veryfast,faster,fast,medium,slow,slower,veryslow,placebo}
+                        libx264 preset. Only used when re-encoding (--no-
+                        copy). (default: medium)
+  -e, --output-extension OUTPUT_EXTENSION
                         Override the output file extension for extracted
                         scenes (e.g., '.mkv'). Default: same as input.
+                        (default: None)
   -p, --progress        Show a progress bar on stderr (default: False)
   -v, --verbose         Print verbose info to stderr (default: False)
-  -O OUTPUT_FILE, --output-file OUTPUT_FILE
+  -O, --output-file OUTPUT_FILE
                         Write output to a file instead of stdout (default:
                         None)
   --ffmpeg-path FFMPEG_PATH

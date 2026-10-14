@@ -31,6 +31,19 @@ def setup_logger(level: int = logging.INFO) -> logging.Logger:
     return logger
 
 
+def crf_value(value: str) -> int:
+    """
+    Parse a CRF value and check that it is between 0 and 51.
+    """
+    try:
+        crf = int(value)
+    except ValueError:
+        raise argparse.ArgumentTypeError(f"invalid CRF value: {value}")
+    if not (0 <= crf <= 51):
+        raise argparse.ArgumentTypeError(f"CRF must be between 0 and 51, got {crf}")
+    return crf
+
+
 def main():
     parser = argparse.ArgumentParser(
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
@@ -72,6 +85,19 @@ def main():
         "--no-copy",
         action="store_true",
         help="Don't stream-copy, but re-encode the video.",
+    )
+    parser.add_argument(
+        "--crf",
+        type=crf_value,
+        default=ScenecutExtractor.DEFAULT_CRF,
+        help="CRF value (0-51) for libx264. Only used when re-encoding (--no-copy).",
+    )
+    parser.add_argument(
+        "--preset",
+        type=str,
+        default=ScenecutExtractor.DEFAULT_PRESET,
+        choices=ScenecutExtractor.PRESETS,
+        help="libx264 preset. Only used when re-encoding (--no-copy).",
     )
     parser.add_argument(
         "-e",
@@ -143,6 +169,8 @@ def main():
                 no_copy=cli_args.no_copy,
                 progress=cli_args.progress,
                 output_extension=cli_args.output_extension,
+                crf=cli_args.crf,
+                preset=cli_args.preset,
             )
             logger.info(f"Scenes extracted to {cli_args.output_directory}")
 

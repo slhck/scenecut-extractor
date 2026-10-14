@@ -59,6 +59,23 @@ class ScenecutInfo(TypedDict):
 
 class ScenecutExtractor:
     DEFAULT_THRESHOLD: float = 0.3
+    DEFAULT_CRF: int = 23
+    """Default libx264 CRF value used when re-encoding"""
+    DEFAULT_PRESET: str = "medium"
+    """Default libx264 preset used when re-encoding"""
+    PRESETS: tuple[str, ...] = (
+        "ultrafast",
+        "superfast",
+        "veryfast",
+        "faster",
+        "fast",
+        "medium",
+        "slow",
+        "slower",
+        "veryslow",
+        "placebo",
+    )
+    """Valid libx264 presets"""
 
     def __init__(self, input_file: str, ffmpeg_path: str = "ffmpeg") -> None:
         """
@@ -221,6 +238,8 @@ class ScenecutExtractor:
         no_copy: bool = False,
         progress: bool = False,
         output_extension: Optional[str] = None,
+        crf: int = DEFAULT_CRF,
+        preset: str = DEFAULT_PRESET,
     ):
         """
         Extract all scenes to individual files.
@@ -230,9 +249,13 @@ class ScenecutExtractor:
             no_copy (bool, optional): Do not copy the streams, reencode them. Defaults to False.
             progress (bool, optional): Show progress bar. Defaults to False.
             output_extension (str, optional): Output file extension (e.g., ".mp4"). Defaults to input file extension.
+            crf (int, optional): CRF value (0-51) for libx264. Only used when re-encoding. Defaults to 23.
+            preset (str, optional): libx264 preset. Only used when re-encoding. Defaults to "medium".
         """
         if self.scenecuts is None:
             raise RuntimeError("No scene cuts calculated yet")
+
+        ScenecutExtractor._validate_encoder_options(crf, preset)
 
         # insert one at the beginning
         scenecuts = self.scenecuts[:]
@@ -251,6 +274,24 @@ class ScenecutExtractor:
                 progress,
                 self.ffmpeg_path,
                 output_extension,
+                crf,
+                preset,
+            )
+
+    @staticmethod
+    def _validate_encoder_options(crf: int, preset: str) -> None:
+        """
+        Check the CRF value and preset for libx264.
+
+        Raises:
+            RuntimeError: if the CRF value is outside 0-51 or the preset is unknown
+        """
+        if not (0 <= crf <= 51):
+            raise RuntimeError("CRF must be between 0 and 51")
+        if preset not in ScenecutExtractor.PRESETS:
+            raise RuntimeError(
+                f"Invalid preset: {preset}. Must be one of: "
+                + ", ".join(ScenecutExtractor.PRESETS)
             )
 
     @staticmethod
@@ -263,6 +304,8 @@ class ScenecutExtractor:
         progress: bool = False,
         ffmpeg_path: str = "ffmpeg",
         output_extension: Optional[str] = None,
+        crf: int = DEFAULT_CRF,
+        preset: str = DEFAULT_PRESET,
     ):
         """
         Cut a part of a video.
@@ -276,6 +319,8 @@ class ScenecutExtractor:
             progress (bool, optional): Show progress bar. Defaults to False.
             ffmpeg_path (str, optional): Path to ffmpeg executable. Defaults to "ffmpeg".
             output_extension (str, optional): Output file extension (e.g., ".mp4"). Defaults to input file extension.
+            crf (int, optional): CRF value (0-51) for libx264. Only used when re-encoding. Defaults to 23.
+            preset (str, optional): libx264 preset. Only used when re-encoding. Defaults to "medium".
 
         FIXME: This has been copy-pasted from ffmpeg-black-split.
         """
@@ -289,7 +334,17 @@ class ScenecutExtractor:
             to_args = []
 
         if no_copy:
-            codec_args = ["-c:v", "libx264", "-c:a", "aac"]
+            ScenecutExtractor._validate_encoder_options(crf, preset)
+            codec_args = [
+                "-c:v",
+                "libx264",
+                "-crf",
+                str(crf),
+                "-preset",
+                preset,
+                "-c:a",
+                "aac",
+            ]
         else:
             codec_args = ["-c", "copy"]
 
