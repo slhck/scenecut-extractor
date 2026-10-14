@@ -1,3 +1,17 @@
+## [0.10.0] - 2026-10-14
+
+### 🚀 Features
+
+- *(cli)* Add --crf and --preset for re-encoding
+
+### 🐛 Bug Fixes
+
+- *(extract)* Write last scene when splitting
+
+### ⚙️ Miscellaneous Tasks
+
+- Update pre-commit config
+- Bump version to 0.10.0
 ## [0.9.2] - 2026-10-11
 
 ### 🐛 Bug Fixes
